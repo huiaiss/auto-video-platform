@@ -84,7 +84,6 @@ VIDEO_TYPES = {
         "share_trigger": "转发给你身边经常刷到假图的朋友，帮TA练眼睛",
         "comment_trigger": "你还见过什么AI破绽？发评论区我下期讲",
         "bgm_style": "赛博朋克电子/科技悬疑",
-        "tags": ["AI照妖镜", "AI识别", "AI真假辨别", "反诈", "AI鉴定"],
         "info_density": "每5秒至少1个破绽点或识别技巧，每期至少教1个可用的识别方法",
         "key_positioning": "只教方法，不替代检测工具。反诈APP=答案，我们=解题思路。",
     },
@@ -154,14 +153,13 @@ VIDEO_TYPES = {
 
 # ─── Brand DNA ──────────────────────────────────────────────
 
-DEFAULT_BRAND_DNA = {
-    "brand_name": "AI照妖镜",
-    "slogan": "反诈APP给你答案，我给你眼睛",
-    "visual_style": "深色背景 + 霓虹绿扫描线(#00e676) + 红色圆圈标注(#ff1744) + 赛博朋克检测界面风格",
-    "tone": "冷静客观+口语化+'我教你'教学感（非'我帮你查'工具感）",
-    "bgm_style": "赛博朋克电子",
-    "outro_template": "反诈APP帮你查，{brand_name}教你看。{slogan}",
-}
+def _load_brand_dna():
+    """Lazy-load brand DNA from config file (single source of truth)."""
+    from config.brand_loader import get_brand
+    return get_brand()
+
+
+DEFAULT_BRAND_DNA = None  # Lazily loaded; use _load_brand_dna() in generate()
 
 
 # ─── Engine ─────────────────────────────────────────────────
@@ -193,7 +191,8 @@ class ScriptEngine:
             style_hint: 额外的风格提示 (可选)
         """
         vt = VIDEO_TYPES.get(video_type, VIDEO_TYPES["ai_flaw_detect"])
-        brand = {**DEFAULT_BRAND_DNA, **(brand_dna or {})}
+        base_brand = _load_brand_dna()
+        brand = {**base_brand, **(brand_dna or {})}
 
         prompt = self._build_prompt(vt, brand, topic, ref_analysis, style_hint)
         response = self._call_llm(prompt)
@@ -331,7 +330,7 @@ class ScriptEngine:
 2. 收藏诱因、转发诱因、评论引爆至少各1个beat标记为true
 3. 如果提供了参考素材分析，口播必须引用其中的具体信息（如标题中的乱码文字、产品参数等）
 4. checklist要简洁有力，能在视频结尾作为静态画面停留2-3秒供截图
-5. 结尾口播使用品牌outro模板：反诈APP帮你查，AI照妖镜教你看。反诈APP给你答案，我给你眼睛
+5. 结尾口播使用品牌的outro模板（从brand_dna.json的outro_template读取）
 6. 每条视频至少教1个观众"下次自己也能看出来"的识别方法（不只说破绽在哪，更要说为什么）"""
 
     # ─── LLM Call ────────────────────────────────────────
@@ -501,7 +500,7 @@ class ScriptEngine:
             hook_type=data.get("hook_type", vt["hook_patterns"][0]),
             beats=beats,
             outro=outro,
-            tags=data.get("tags", vt.get("tags", [])),
+            tags=data.get("tags", brand.get("tags", vt.get("tags", []))),
             bgm_style=data.get("bgm_style", vt.get("bgm_style", "")),
             checklist=data.get("checklist", ""),
             total_duration_s=total,

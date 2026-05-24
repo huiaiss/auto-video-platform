@@ -8,6 +8,14 @@ Each component knows how to generate its:
 """
 
 from dataclasses import dataclass, field
+
+
+def _brand_name() -> str:
+    try:
+        from config.brand_loader import get_brand_name
+        return get_brand_name()
+    except Exception:
+        return "Auto Video"
 from typing import Optional
 
 
@@ -846,7 +854,7 @@ class OutroComponent(Component):
 
     def html(self) -> str:
         c = self.config
-        title = c.get("title", "AI照妖镜")
+        title = c.get("title") or _brand_name()
         subtitle = c.get("subtitle", "关注我，下次被骗的不是你")
         teaser = c.get("teaser", "下期：5个AI检测工具横评 →")
         logo_char = c.get("logo_char", "AI")

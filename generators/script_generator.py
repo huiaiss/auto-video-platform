@@ -383,7 +383,7 @@ class ScriptGenerator:
                 break
 
         storyboard = []
-        outro_line = script_cfg.get("outro_line", "关注AI照妖镜，下次被骗的不是你")
+        outro_line = script_cfg.get("outro_line") or f"关注{brand_name}，下次被骗的不是你"
 
         def _extract_garbled_text(finding: dict) -> str:
             """Extract the actual garbled characters from a finding's details field."""
@@ -498,7 +498,7 @@ class ScriptGenerator:
                 "sound_design": {"sfx": "每次标注破绽时'叮'一声提示音", "audio_mixing": "人声-6dB, BGM-20dB, 提示音-8dB"},
             },
             "tags": {
-                "core": (platforms.get("douyin", {}).get("hashtags", ["AI照妖镜", "AI识别"]))[:3],
+                "core": (platforms.get("douyin", {}).get("hashtags", ["AI识别", "真假辨别"]))[:3],
                 "trending": ["AI真假辨别", "防骗指南", "AI鉴定"],
                 "long_tail": ["AI破绽", "如何识别AI图片", "AI造假"],
             },

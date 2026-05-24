@@ -18,6 +18,15 @@ from pathlib import Path
 from typing import Optional
 
 
+def _brand_name() -> str:
+    """Get current brand name from config (single source of truth)."""
+    try:
+        from config.brand_loader import get_brand_name
+        return get_brand_name()
+    except Exception:
+        return "Auto Video"
+
+
 # ─── Data Types ─────────────────────────────────────────────
 
 @dataclass
@@ -292,7 +301,7 @@ class AssemblyEngine:
                 "img_src": outro_img,
                 "asset_path": outro_img,
                 "asset_type": "image",
-                "title": "AI照妖镜",
+                "title": _brand_name(),
                 "subtitle": "关注我，下次被骗的不是你",
                 "teaser": f"下期继续拆解AI破绽 →",
                 "checklist": script.checklist,
@@ -437,16 +446,17 @@ class AssemblyEngine:
         # --- Component-specific enrichments ---
 
         if component_name == "social-frame":
+            bn = _brand_name()
             base.update({
-                "username": "AI照妖镜",
-                "avatar_letter": "鉴",
+                "username": bn,
+                "avatar_letter": bn[0] if bn else "鉴",
                 "post_text": beat.text,
                 "post_time": "刚刚",
                 "likes": "1.2k",
                 "comments": [
                     ("小明", "这怎么看出来的？教教我"),
                     ("小红", "天哪我一直以为是真的"),
-                    ("AI照妖镜", "点个关注，下期教你"),
+                    (bn, "点个关注，下期教你"),
                 ],
             })
 

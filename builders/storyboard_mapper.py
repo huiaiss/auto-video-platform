@@ -19,6 +19,14 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 
+def _brand_name() -> str:
+    try:
+        from config.brand_loader import get_brand_name
+        return get_brand_name()
+    except Exception:
+        return "Auto Video"
+
+
 # ---------------------------------------------------------------------------
 # Mapping profiles — one per video type
 # ---------------------------------------------------------------------------
@@ -94,7 +102,7 @@ AI_FLAW_DETECT_PROFILE: list[ShotMapping] = [
     ShotMapping(
         component="outro",
         config_template={
-            "title": "AI照妖镜",
+            "title": _brand_name(),
             "subtitle": "关注我，下次被骗的不是你",
             "teaser": "下期见 →",
             "logo_char": "鉴",
@@ -441,7 +449,7 @@ class StoryboardMapper:
             "start": comp_start + 10.0,
             "duration": 10.0,
             "config": {
-                "title": "AI照妖镜",
+                "title": _brand_name(),
                 "subtitle": "关注我，下次被骗的不是你",
                 "teaser": tc["teaser"],
                 "logo_char": "鉴",

@@ -30,6 +30,14 @@ import os, sys, uuid, shutil
 from pathlib import Path
 from typing import Optional
 
+
+def _brand_name() -> str:
+    try:
+        from config.brand_loader import get_brand_name
+        return get_brand_name()
+    except Exception:
+        return "Auto Video"
+
 # ---------------------------------------------------------------------------
 # Lazy import — only when actually exporting
 # ---------------------------------------------------------------------------
@@ -541,7 +549,7 @@ class JianyingDraftExporter:
 
     def _export_outro(self, cfg: dict, start: float, dur: float, mats: str):
         """Outro → logo ring + title + CTA subtitle + teaser."""
-        title = cfg.get("title", "AI照妖镜")
+        title = cfg.get("title") or _brand_name()
         subtitle = cfg.get("subtitle", "关注我，下次被骗的不是你")
         teaser = cfg.get("teaser", "下期见 →")
         logo_char = cfg.get("logo_char", "鉴")

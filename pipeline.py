@@ -592,8 +592,8 @@ def main():
                         help="Output directory")
 
     # Options
-    parser.add_argument("--brand", "-b", default="AI照妖镜",
-                        help="Brand name for DNA config")
+    parser.add_argument("--brand", "-b", default=None,
+                        help="Brand name (default from config/brand_dna.json)")
     parser.add_argument("--style", default="",
                         help="Extra style hint for script generation")
     parser.add_argument("--voice", default="zh-CN-YunxiNeural",
@@ -634,11 +634,9 @@ def main():
         print("Error: No reference image. Use --ref PATH or --ep NUM")
         sys.exit(1)
 
-    # Set brand DNA
-    brand_dna = None
-    if args.brand:
-        from generators.script_engine import DEFAULT_BRAND_DNA
-        brand_dna = {**DEFAULT_BRAND_DNA, "brand_name": args.brand}
+    # Set brand DNA — loaded from config/brand_dna.json
+    from config.brand_loader import get_brand
+    brand_dna = get_brand(args.brand) if args.brand else get_brand()
 
     # Run
     result = pipeline.run(

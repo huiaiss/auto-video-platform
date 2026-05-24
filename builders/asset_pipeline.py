@@ -20,6 +20,14 @@ from pathlib import Path
 from typing import Optional
 
 
+def _brand_name() -> str:
+    try:
+        from config.brand_loader import get_brand_name
+        return get_brand_name()
+    except Exception:
+        return "Auto Video"
+
+
 # ─── Data Types ─────────────────────────────────────────────
 
 @dataclass
@@ -232,7 +240,8 @@ class AssetPipeline:
         draw.rectangle([(0, 0), (W, 130)], fill=(0, 200, 100))
         tag = {1: "HOOK", 2: "展示", 3: "破绽①", 4: "破绽②", 5: "破绽③",
                6: "原理", 7: "清单", 8: "转发", 9: "评论", 10: "OUTRO"}.get(beat_idx, f"BEAT{beat_idx}")
-        draw.text((40, 30), f"AI照妖镜 · {tag}", fill=(8, 10, 18), font=font_lg)
+        brand = _brand_name()
+        draw.text((40, 30), f"{brand} · {tag}", fill=(8, 10, 18), font=font_lg)
 
         # ── Center: visual placeholder area ──
         # AI detection interface mockup
