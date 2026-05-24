@@ -1,0 +1,103 @@
+<h2>设置标签页</h2>
+<p class="subtitle">LLM / TTS / 品牌DNA 集中配置，一次设置全局生效</p>
+
+<div class="mockup">
+  <div class="mockup-header">设置面板</div>
+  <div class="mockup-body" style="font-size:12px; padding:14px; display:flex; flex-direction:column; gap:14px;">
+
+    <!-- Section 1: LLM -->
+    <div style="border:1px solid #dee2e6; border-radius:8px; padding:12px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <strong style="font-size:13px;">LLM 模型提供商</strong>
+        <span style="font-size:10px; color:#28a745;">DeepSeek 在线</span>
+      </div>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <span style="padding:4px 12px; background:#e94560; color:#fff; border-radius:16px; font-size:11px;">DeepSeek ✓</span>
+        <span style="padding:4px 12px; background:#f0f0f0; border-radius:16px; font-size:11px;">Qwen (未配置)</span>
+        <span style="padding:4px 12px; background:#f0f0f0; border-radius:16px; font-size:11px;">Ollama (未安装)</span>
+        <span style="padding:4px 12px; background:#f0f0f0; border-radius:16px; font-size:11px;">+ 添加</span>
+      </div>
+      <div style="margin-top:6px; font-size:10px; color:#888;">
+        优先级：DeepSeek → Qwen → Ollama。当前Provider挂了自动切下一个
+      </div>
+    </div>
+
+    <!-- Section 2: TTS -->
+    <div style="border:1px solid #dee2e6; border-radius:8px; padding:12px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <strong style="font-size:13px;">TTS 配音引擎</strong>
+        <span style="font-size:10px; color:#28a745;">Edge TTS 在线</span>
+      </div>
+      <div style="display:flex; gap:8px; align-items:center;">
+        <span class="mock-input" style="font-size:11px; width:160px;">当前: 云希 (YunxiNeural) ▼</span>
+        <span class="mock-input" style="font-size:11px; width:80px;">语速: 1.1</span>
+        <span class="mock-button" style="font-size:10px; padding:4px 8px; background:#0f3460; color:#fff; border-radius:4px;">▶ 试听</span>
+      </div>
+      <div style="margin-top:6px; font-size:10px; color:#888;">
+        可选: 云希 / 云扬 / 晓晓 / 云健 / 晓依 | CosyVoice(词级时间戳) 待安装
+      </div>
+    </div>
+
+    <!-- Section 3: Brand DNA -->
+    <div style="border:1px solid #dee2e6; border-radius:8px; padding:12px;">
+      <strong style="font-size:13px;">品牌DNA</strong>
+      <div style="display:flex; gap:8px; margin-top:6px; flex-wrap:wrap;">
+        <div style="flex:1; min-width:180px;">
+          <span style="font-size:10px; color:#888;">品牌名</span>
+          <input class="mock-input" style="width:100%; font-size:11px;" value="AI照妖镜">
+        </div>
+        <div style="flex:1; min-width:180px;">
+          <span style="font-size:10px; color:#888;">标语</span>
+          <input class="mock-input" style="width:100%; font-size:11px;" value="关注AI照妖镜，下次被骗的不是你">
+        </div>
+        <div style="flex:1; min-width:180px;">
+          <span style="font-size:10px; color:#888;">BGM风格</span>
+          <span class="mock-input" style="width:100%; font-size:11px;">赛博朋克电子 ▼</span>
+        </div>
+      </div>
+      <div style="display:flex; gap:8px; margin-top:6px;">
+        <div style="flex:1;">
+          <span style="font-size:10px; color:#888;">视觉风格</span>
+          <input class="mock-input" style="width:100%; font-size:11px;" value="深色背景+霓虹绿标注+红色高亮">
+        </div>
+        <div style="flex:1;">
+          <span style="font-size:10px; color:#888;">语气</span>
+          <input class="mock-input" style="width:100%; font-size:11px;" value="冷静客观+略带犀利+口语化">
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: Defaults -->
+    <div style="border:1px solid #dee2e6; border-radius:8px; padding:12px;">
+      <strong style="font-size:13px;">默认参数</strong>
+      <div style="display:flex; gap:8px; margin-top:6px;">
+        <span class="mock-input" style="font-size:11px;">默认视频类型: AI鉴定 ▼</span>
+        <span class="mock-input" style="font-size:11px;">输出目录: output/</span>
+        <span class="mock-input" style="font-size:11px;">自动打开预览: 开 ▼</span>
+      </div>
+    </div>
+
+    <!-- Save -->
+    <div style="text-align:right;">
+      <span class="mock-button" style="background:#e94560; color:#fff; padding:8px 24px; border-radius:6px; font-size:13px; font-weight:600;">保存设置</span>
+    </div>
+
+  </div>
+</div>
+
+<div class="section" style="margin-top:14px;">
+  <h3>设置设计原则</h3>
+  <div style="display:flex; gap:12px; font-size:12px;">
+    <div style="flex:1; background:#f8f9fa; padding:10px; border-radius:6px;">
+      <strong>即改即生效</strong><br>不需要重启，改了provider立刻切
+    </div>
+    <div style="flex:1; background:#f8f9fa; padding:10px; border-radius:6px;">
+      <strong>安全不暴露</strong><br>API Key显示为****，只有状态灯提示在线/离线
+    </div>
+    <div style="flex:1; background:#f8f9fa; padding:10px; border-radius:6px;">
+      <strong>配置持久化</strong><br>所有设置存JSON，下次打开还在
+    </div>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top:14px;">设置页的设计OK吗？LLM/TTS/品牌DNA/默认参数 四大块？</p>

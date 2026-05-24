@@ -1,0 +1,86 @@
+# 企业/工厂宣传视频 — 核心商业场景
+# Enterprise Promo — factory tours, product showcases, brand films
+
+type: "enterprise-promo"
+description: "企业/工厂宣传视频，展现制造实力与产品品质"
+
+# ---- Asset Analysis ----
+asset_analysis:
+  detectors:
+    - sharpness    # 清晰度筛选（核心）
+    - composition  # 构图评分
+    - color        # 色彩/曝光检查
+    - stability    # 视频抖动检测
+  min_acceptable_score: 0.5       # 素材最低准入
+  highlight_threshold: 0.75       # 自动标记亮点画面
+  auto_crop: true                 # 自动裁剪优化构图
+
+# ---- Visual Style ----
+style:
+  resolution: "1080x1920"
+  fps: 30
+  background: "linear-gradient(135deg, #0a1628, #1a2a4a)"
+  accent_color: "#00a8ff"         # 品牌主色
+  font_title: "Noto Sans SC Bold"
+  font_body: "Noto Sans SC"
+  subtitle_style: "outline"
+  watermark: true
+  watermark_position: "bottom-right"
+  transition_style: "smooth_dissolve"  # 企业视频用平滑过渡
+
+# ---- Voice ----
+voice:
+  engine: "edge-tts"
+  voice: "zh-CN-YunxiNeural"
+  speed: 1.0
+  pitch: 0
+
+# ---- Video Structure ----
+structure:
+  hook: 3           # 开场痛点/吸引力钩子秒数
+  showcase: 15      # 产品/产线展示秒数
+  features: 8       # 关键参数+卖点叠加秒数
+  proof: 7          # 客户案例/质量认证秒数
+  cta: 5            # 联系方式+引导行动秒数
+
+# ---- Script Tone ----
+script:
+  persona: "专业的工业品牌顾问，稳重可靠，用数据和事实说话"
+  hook_patterns:
+    - "还在为{industry_pain_point}发愁？这家工厂的解决方案让人眼前一亮"
+    - "一台好的{product_type}应该是什么样？带你去工厂看看"
+    - "客户说我们的{product_type}用5年没坏过，秘密就在这个车间里"
+  outro_line: "咨询热线：{phone} | 了解更多请私信"
+  max_words_per_shot: 28
+  must_include_brand: true
+
+# ---- Publishing ----
+platforms:
+  douyin:
+    title_templates:
+      - "看完这家工厂的生产线，终于知道什么叫品质"
+      - "一台{product_type}的诞生过程，看完就懂了"
+      - "同行为什么做不过他们？进车间你就明白了"
+    best_times: ["19:00", "12:00", "21:00"]
+    hashtags: ["自动化设备", "智能工厂", "中国制造", "源头工厂"]
+    duration_range: [25, 55]
+  kuaishou:
+    title_templates:
+      - "老铁们看看这设备，你们觉得值多少钱？"
+    hashtags: ["工厂实拍", "源头好货", "自动化设备"]
+    duration_range: [30, 57]
+  shipinhao:
+    title_templates:
+      - "为什么越来越多工厂选择自动化？答案在这里"
+    social_sharing_hook: true
+    private_domain_guide: true
+
+# ---- Quality Gate ----
+quality_gate:
+  min_sharpness_score: 0.5
+  subtitle_sync_tolerance: 0.2s
+  audio_loudness_target: -14
+  max_duration: 55
+  required_elements:
+    - brand_logo_endcard
+    - contact_info

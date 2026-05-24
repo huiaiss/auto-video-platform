@@ -1,0 +1,52 @@
+{
+  "default_model": "deepseek-chat",
+  "temperature": 0.8,
+  "max_tokens": 4096,
+  "timeout_s": 120,
+
+  "providers": [
+    {
+      "name": "deepseek",
+      "display_name": "DeepSeek",
+      "base_url": "https://api.deepseek.com",
+      "api_key_env": "DEEPSEEK_API_KEY",
+      "models": ["deepseek-chat", "deepseek-reasoner"],
+      "default_model": "deepseek-chat",
+      "priority": 1,
+      "enabled": true
+    },
+    {
+      "name": "qwen",
+      "display_name": "Qwen (DashScope)",
+      "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
+      "api_key_env": "DASHSCOPE_API_KEY",
+      "models": ["qwen-plus", "qwen-max", "qwen-turbo"],
+      "default_model": "qwen-plus",
+      "priority": 2,
+      "enabled": true
+    },
+    {
+      "name": "ollama",
+      "display_name": "Ollama (Local)",
+      "base_url": "http://localhost:11434/v1",
+      "api_key_env": null,
+      "models": ["qwen3", "llama3", "mistral"],
+      "default_model": "qwen3",
+      "priority": 3,
+      "enabled": false
+    },
+    {
+      "name": "moonshot",
+      "display_name": "Moonshot (Kimi)",
+      "base_url": "https://api.moonshot.cn/v1",
+      "api_key_env": "MOONSHOT_API_KEY",
+      "models": ["moonshot-v1-8k", "moonshot-v1-32k", "moonshot-v1-128k"],
+      "default_model": "moonshot-v1-8k",
+      "priority": 4,
+      "enabled": false
+    }
+  ],
+
+  "fallback_strategy": "sequential",
+  "retry_count": 1
+}

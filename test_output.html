@@ -1,0 +1,630 @@
+<!doctype html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1080, height=1920" />
+  <script src="node_modules/gsap/dist/gsap.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 1080px; height: 1920px; overflow: hidden;
+      background: #06060b;
+      font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+    .clip { position: absolute; top: 0; left: 0; width: 1080px; height: 1920px; }
+
+    /* ── Global scene backgrounds ── */
+    .scene-bg {
+      position: absolute; top: 0; left: 0; width: 1080px; height: 1920px;
+      background: radial-gradient(ellipse at 50% 40%, #0d1b2a 0%, #06060b 70%);
+    }
+    .scene-bg-dark {
+      position: absolute; top: 0; left: 0; width: 1080px; height: 1920px;
+      background: #06060b;
+    }
+
+    .gradient-top {
+      position: absolute; top: 0; left: 0; width: 1080px; height: 200px;
+      background: linear-gradient(to bottom, rgba(6,6,11,0.7) 0%, transparent 100%);
+    }
+    .gradient-bottom {
+      position: absolute; bottom: 0; left: 0; width: 1080px; height: 500px;
+      background: linear-gradient(to top, rgba(6,6,11,0.95) 0%, rgba(6,6,11,0.5) 50%, transparent 100%);
+    }
+
+
+    /* ── Scan overlay ── */
+    .scan-overlay {
+      position: absolute; top: 0; left: 0; width: 1080px; height: 1920px;
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 2px,
+        rgba(0,230,118,0.006) 2px, rgba(0,230,118,0.006) 4px
+      );
+      z-index: 30; pointer-events: none;
+    }
+    .scan-line {
+      position: absolute; left: 0; width: 1080px; height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(0,230,118,0.12), transparent);
+      z-index: 31; pointer-events: none;
+    }
+
+    /* ── Progress bar ── */
+    .progress-wrap {
+      position: absolute; top: 0; left: 0; width: 1080px; height: 4px;
+      z-index: 32; background: rgba(255,255,255,0.03);
+    }
+    .progress-fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, #00e676, #00c853);
+    }
+    .progress-dot {
+      position: absolute; top: 0; width: 3px; height: 6px;
+      background: rgba(255,23,68,0.5);
+    }
+
+
+    /* ── Component styles ── */
+
+
+        .sm-bg {
+            position:absolute;top:0;left:0;width:1080px;height:1920px;
+            background:linear-gradient(180deg,#1a1a1a 0%,#111 40%,#0d0d0d 100%);
+        }
+        .sm-statusbar {
+            position:absolute;top:0;left:0;width:1080px;height:90px;
+            display:flex;justify-content:space-between;align-items:center;
+            padding:30px 50px;color:#fff;font-size:26px;font-weight:600;
+            background:rgba(0,0,0,0.3);
+        }
+        .sm-header {
+            position:absolute;top:90px;left:0;width:1080px;height:80px;
+            display:flex;align-items:center;padding:0 50px;
+            border-bottom:1px solid rgba(255,255,255,0.06);
+        }
+        .sm-header-title{color:#fff;font-size:34px;font-weight:700;flex:1;text-align:center;}
+        .sm-avatar{width:84px;height:84px;border-radius:50%;
+            background:linear-gradient(135deg,#f5a623,#f76b1c);
+            display:flex;align-items:center;justify-content:center;
+            color:#fff;font-size:36px;font-weight:900;}
+        .sm-username{color:#ecbe6b;font-size:32px;font-weight:700;}
+        .sm-post-text{color:#ddd;font-size:30px;line-height:1.6;}
+        .sm-photo-wrap{width:100%;max-height:820px;border-radius:12px;overflow:hidden;position:relative;}
+        .sm-photo-wrap img{width:100%;display:block;max-height:820px;object-fit:cover;}
+        .sm-likes-heart{color:#e74c3c;}
+        .sm-comment{padding:10px 0;font-size:26px;line-height:1.5;}
+        .sm-comment-name{color:#5b7fba;}
+        
+
+        .glitch-r{position:absolute;top:0;left:0;width:1080px;height:1920px;background:#ff0040;mix-blend-mode:screen;opacity:0;z-index:42;}
+        .glitch-g{position:absolute;top:0;left:0;width:1080px;height:1920px;background:#00ff40;mix-blend-mode:screen;opacity:0;z-index:42;}
+        .glitch-b{position:absolute;top:0;left:0;width:1080px;height:1920px;background:#0040ff;mix-blend-mode:screen;opacity:0;z-index:42;}
+        .glitch-slice{position:absolute;left:0;width:1080px;height:200px;z-index:43;background:rgba(255,255,255,0.3);opacity:0;}
+        .glitch-vcr{position:absolute;top:0;left:0;width:1080px;height:1920px;z-index:44;
+            background:repeating-linear-gradient(0deg,transparent,transparent 4px,rgba(0,0,0,0.03) 4px,rgba(0,0,0,0.03) 6px);
+            opacity:0;pointer-events:none;}
+        
+
+        .neon-circle{position:absolute;border-radius:50%;z-index:12;pointer-events:none;
+            border:5px solid #ff1744;
+            box-shadow:0 0 50px rgba(255,23,68,0.8),0 0 90px rgba(255,23,68,0.35);}
+        .neon-circle-inner{position:absolute;border-radius:50%;
+            border:2px dashed rgba(255,23,68,0.45);}
+        .keyword-tag{position:absolute;z-index:13;pointer-events:none;
+            background:#ff1744;color:#fff;
+            font-size:34px;font-weight:900;padding:12px 30px;border-radius:14px;
+            box-shadow:0 0 50px rgba(255,23,68,0.6),0 8px 24px rgba(0,0,0,0.5);}
+        .deviation-tag{position:absolute;z-index:14;pointer-events:none;
+            background:rgba(0,0,0,0.9);color:#ff1744;
+            font-size:28px;font-weight:700;padding:10px 22px;border-radius:12px;
+            border:1px solid rgba(255,23,68,0.5);}
+        .deviation-big{font-size:54px;font-weight:900;display:block;line-height:1.1;}
+        .meas-ref-line{position:absolute;z-index:13;pointer-events:none;
+            height:3px;background:#00e676;
+            box-shadow:0 0 18px rgba(0,230,118,0.5);}
+        .meas-deviation-line{position:absolute;z-index:13;pointer-events:none;
+            height:4px;background:#ff1744;
+            box-shadow:0 0 26px rgba(255,23,68,0.6);}
+        .joint-straight-line{position:absolute;z-index:13;pointer-events:none;
+            height:5px;background:#ff9100;
+            box-shadow:0 0 28px rgba(255,145,0,0.7);
+            transform-origin:left center;}
+        .count-badge{position:absolute;z-index:14;pointer-events:none;
+            width:80px;height:80px;border-radius:50%;
+            background:#ff1744;color:#fff;
+            font-size:42px;font-weight:900;
+            display:flex;align-items:center;justify-content:center;
+            box-shadow:0 0 40px rgba(255,23,68,0.7);}
+        
+
+        .neon-circle{position:absolute;border-radius:50%;z-index:12;pointer-events:none;
+            border:5px solid #ff1744;
+            box-shadow:0 0 50px rgba(255,23,68,0.8),0 0 90px rgba(255,23,68,0.35);}
+        .neon-circle-inner{position:absolute;border-radius:50%;
+            border:2px dashed rgba(255,23,68,0.45);}
+        .keyword-tag{position:absolute;z-index:13;pointer-events:none;
+            background:#ff1744;color:#fff;
+            font-size:34px;font-weight:900;padding:12px 30px;border-radius:14px;
+            box-shadow:0 0 50px rgba(255,23,68,0.6),0 8px 24px rgba(0,0,0,0.5);}
+        .deviation-tag{position:absolute;z-index:14;pointer-events:none;
+            background:rgba(0,0,0,0.9);color:#ff1744;
+            font-size:28px;font-weight:700;padding:10px 22px;border-radius:12px;
+            border:1px solid rgba(255,23,68,0.5);}
+        .deviation-big{font-size:54px;font-weight:900;display:block;line-height:1.1;}
+        .meas-ref-line{position:absolute;z-index:13;pointer-events:none;
+            height:3px;background:#00e676;
+            box-shadow:0 0 18px rgba(0,230,118,0.5);}
+        .meas-deviation-line{position:absolute;z-index:13;pointer-events:none;
+            height:4px;background:#ff1744;
+            box-shadow:0 0 26px rgba(255,23,68,0.6);}
+        .joint-straight-line{position:absolute;z-index:13;pointer-events:none;
+            height:5px;background:#ff9100;
+            box-shadow:0 0 28px rgba(255,145,0,0.7);
+            transform-origin:left center;}
+        .count-badge{position:absolute;z-index:14;pointer-events:none;
+            width:80px;height:80px;border-radius:50%;
+            background:#ff1744;color:#fff;
+            font-size:42px;font-weight:900;
+            display:flex;align-items:center;justify-content:center;
+            box-shadow:0 0 40px rgba(255,23,68,0.7);}
+        
+
+        .neon-circle{position:absolute;border-radius:50%;z-index:12;pointer-events:none;
+            border:5px solid #ff1744;
+            box-shadow:0 0 50px rgba(255,23,68,0.8),0 0 90px rgba(255,23,68,0.35);}
+        .neon-circle-inner{position:absolute;border-radius:50%;
+            border:2px dashed rgba(255,23,68,0.45);}
+        .keyword-tag{position:absolute;z-index:13;pointer-events:none;
+            background:#ff1744;color:#fff;
+            font-size:34px;font-weight:900;padding:12px 30px;border-radius:14px;
+            box-shadow:0 0 50px rgba(255,23,68,0.6),0 8px 24px rgba(0,0,0,0.5);}
+        .deviation-tag{position:absolute;z-index:14;pointer-events:none;
+            background:rgba(0,0,0,0.9);color:#ff1744;
+            font-size:28px;font-weight:700;padding:10px 22px;border-radius:12px;
+            border:1px solid rgba(255,23,68,0.5);}
+        .deviation-big{font-size:54px;font-weight:900;display:block;line-height:1.1;}
+        .meas-ref-line{position:absolute;z-index:13;pointer-events:none;
+            height:3px;background:#00e676;
+            box-shadow:0 0 18px rgba(0,230,118,0.5);}
+        .meas-deviation-line{position:absolute;z-index:13;pointer-events:none;
+            height:4px;background:#ff1744;
+            box-shadow:0 0 26px rgba(255,23,68,0.6);}
+        .joint-straight-line{position:absolute;z-index:13;pointer-events:none;
+            height:5px;background:#ff9100;
+            box-shadow:0 0 28px rgba(255,145,0,0.7);
+            transform-origin:left center;}
+        .count-badge{position:absolute;z-index:14;pointer-events:none;
+            width:80px;height:80px;border-radius:50%;
+            background:#ff1744;color:#fff;
+            font-size:42px;font-weight:900;
+            display:flex;align-items:center;justify-content:center;
+            box-shadow:0 0 40px rgba(255,23,68,0.7);}
+        
+
+        .compare-wrap{position:absolute;top:160px;left:30px;right:30px;bottom:440px;display:flex;gap:12px;}
+        .compare-half{flex:1;border-radius:16px;overflow:hidden;position:relative;border:2px solid rgba(255,255,255,0.06);}
+        .compare-half img{width:100%;height:100%;object-fit:cover;}
+        .compare-badge{position:absolute;top:12px;left:12px;padding:8px 22px;border-radius:22px;font-size:24px;font-weight:700;}
+        .badge-ai{background:rgba(255,23,68,0.15);color:#ff1744;border:1px solid rgba(255,23,68,0.4);}
+        .badge-real{background:rgba(0,230,118,0.12);color:#00e676;border:1px solid rgba(0,230,118,0.4);}
+        .compare-divider{position:absolute;top:50%;left:50%;margin-left:-44px;margin-top:-44px;width:88px;height:88px;border-radius:50%;
+            background:rgba(0,0,0,0.8);border:2px solid rgba(255,255,255,0.2);
+            display:flex;align-items:center;justify-content:center;z-index:5;
+            color:#fff;font-size:44px;font-weight:900;}
+        .checklist-row{display:flex;justify-content:space-between;align-items:center;padding:10px 24px;border-radius:12px;background:rgba(0,0,0,0.55);}
+        .checklist-label{color:#fff;font-size:32px;font-weight:600;}
+        .checklist-fail{color:#ff1744;font-size:32px;font-weight:700;}
+        .checklist-pass{color:#00e676;font-size:32px;font-weight:700;}
+        
+  </style>
+</head>
+<body>
+
+  <audio id="narration" src="assets/narration.mp3" style="display:none;"></audio>
+  <audio id="bgm" src="assets/bgm_tech.mp3" loop style="display:none;"></audio>
+  <div class="scene-bg-dark" id="globalBgDark"></div>
+  <div class="gradient-top" id="gradTop"></div>
+  <div class="gradient-bottom" id="gradBot"></div>
+
+        <div class="sm-bg" id="smBg"></div>
+        <div class="sm-statusbar" id="smStatus">
+            <span>9:41</span>
+            <span style="font-size:22px;color:#888;">WiFi · 满电</span>
+        </div>
+        <div class="sm-header" id="smHdr">
+            <span style="color:#fff;font-size:24px;">← 返回</span>
+            <span class="sm-header-title">朋友圈</span>
+            <span style="color:#aaa;font-size:24px;">📷</span>
+        </div>
+        <div id="smPost" style="position:absolute;top:180px;left:30px;right:30px;bottom:0;">
+            <div style="display:flex;align-items:center;gap:18px;padding:10px 0 20px;" id="smUser">
+                <div class="sm-avatar">美</div>
+                <span class="sm-username">小美</span>
+                <span style="color:#666;font-size:22px;margin-left:auto;">3小时前</span>
+            </div>
+            <div class="sm-post-text" id="smText">姐妹聚会太开心啦！🎉✨</div>
+            <div class="sm-photo-wrap" id="smPhoto">
+                <img src="assets/img2_group_photo.png" />
+            </div>
+            <div style="display:flex;gap:50px;padding:24px 0;" id="smActions">
+                <div style="display:flex;align-items:center;gap:10px;color:#fff;font-size:28px;">
+                    <span style="width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;">❤</span> 赞
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;color:#fff;font-size:28px;">
+                    <span style="width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;">💬</span> 评论
+                </div>
+            </div>
+            <div style="padding:8px 0;color:#888;font-size:26px;" id="smLikes">
+                <span class="sm-likes-heart">❤</span> 128人赞了
+            </div>
+            <div style="border-top:1px solid rgba(255,255,255,0.05);padding:18px 0;" id="smComments">
+                <div class="sm-comment"><span class="sm-comment-name">小花</span>好美啊！在哪里拍的？</div>
+<div class="sm-comment"><span class="sm-comment-name">大明</span>下次带我一起！</div>
+<div class="sm-comment"><span class="sm-comment-name">小美 回复 小花</span>就在城西那家新开的店~</div>
+            </div>
+        </div>
+        
+
+        <div class="glitch-r" id="glR"></div>
+        <div class="glitch-g" id="glG"></div>
+        <div class="glitch-b" id="glB"></div>
+        <div class="glitch-slice" id="glS1" style="top:300px;"></div>
+        <div class="glitch-slice" id="glS2" style="top:900px;height:160px;"></div>
+        <div class="glitch-slice" id="glS3" style="top:1500px;height:120px;"></div>
+        <div class="glitch-vcr" id="glVcr"></div>
+        
+
+        <div style="position:absolute;top:0;left:0;width:1080px;height:1920px;background:#06060b;z-index:1;opacity:0;" id="s1Dark"></div>
+        <img src="assets/img2_group_photo.png" style="position:absolute;width:1080px;height:1920px;object-fit:cover;z-index:2;opacity:0;" id="img1" />
+        <div style="position:absolute;top:680px;left:80px;right:80px;z-index:50;color:#ff1744;font-size:64px;font-weight:900;text-align:center;text-shadow:0 0 60px rgba(255,23,68,0.6);opacity:0;" id="revealTxt">它不是真人拍的。<br/>是AI生成的。</div>
+        <div style="position:absolute;top:800px;left:120px;right:120px;z-index:50;color:#fff;font-size:42px;font-weight:700;text-align:center;opacity:0;" id="anticTxt">来，我放大三个细节给你看 ↓</div>
+        <div style="position:absolute;bottom:0;left:0;width:1080px;height:500px;background:linear-gradient(to top,rgba(6,6,11,0.95) 0%,rgba(6,6,11,0.5) 50%,transparent 100%);z-index:5;"></div>
+        <div style="position:absolute;top:0;left:0;width:1080px;height:200px;background:linear-gradient(to bottom,rgba(6,6,11,0.7) 0%,transparent 100%);z-index:5;"></div>
+        
+
+        <div style="width:1080px;height:1920px;overflow:hidden;position:absolute;" data-layout-allow-overflow>
+            <img src="assets/img2_group_photo.png" style="position:absolute;width:1080px;height:1920px;object-fit:cover;will-change:transform;transform-origin:540px 1200px;" id="img2" />
+        </div>
+        <div style="position:absolute;bottom:0;left:0;width:1080px;height:700px;background:linear-gradient(to top,rgba(6,6,11,0.95),rgba(6,6,11,0.5),transparent);"></div>
+        <div style="position:absolute;top:0;left:0;width:1080px;height:200px;background:linear-gradient(to bottom,rgba(6,6,11,0.7),transparent);"></div>
+        
+            <div class="neon-circle" id="mk2a" style="width:120px;height:120px;top:1140px;left:420px;"></div>
+            
+            <div class="neon-circle" id="mk2b" style="width:100px;height:100px;top:1130px;left:570px;"></div>
+            
+        <div class="keyword-tag" id="kw2" style="top:760px;left:100px;background:#ff1744;">6根手指</div>
+        
+            <div class="deviation-tag" id="dv2" style="top:700px;right:70px;">
+                <span class="deviation-big">6</span>根手指
+            </div>
+            
+        
+        
+            <div class="count-badge" id="cb2" style="top:1020px;right:80px;">1</div>
+            
+        <div style="position:absolute;top:80px;left:60px;color:#00e676;font-size:26px;font-weight:700;letter-spacing:0.15em;z-index:11;background:rgba(0,230,118,0.08);border:1px solid rgba(0,230,118,0.2);padding:8px 24px;border-radius:8px;" id="lbl2">① 先看手</div>
+        
+
+        <div style="width:1080px;height:1920px;overflow:hidden;position:absolute;" data-layout-allow-overflow>
+            <img src="assets/img2_group_photo.png" style="position:absolute;width:1080px;height:1920px;object-fit:cover;will-change:transform;transform-origin:600px 500px;" id="img3" />
+        </div>
+        <div style="position:absolute;bottom:0;left:0;width:1080px;height:700px;background:linear-gradient(to top,rgba(6,6,11,0.95),rgba(6,6,11,0.5),transparent);"></div>
+        <div style="position:absolute;top:0;left:0;width:1080px;height:200px;background:linear-gradient(to bottom,rgba(6,6,11,0.7),transparent);"></div>
+        
+            <div class="neon-circle" id="mk3a" style="width:200px;height:260px;top:310px;left:440px;"></div>
+            
+            <div class="neon-circle" id="mk3b" style="width:90px;height:90px;top:335px;left:655px;"></div>
+            
+            <div class="neon-circle" id="mk3c" style="width:90px;height:90px;top:375px;left:335px;"></div>
+            
+        <div class="keyword-tag" id="kw3" style="top:760px;left:100px;background:#ff9100;">五官歪斜</div>
+        
+            <div class="deviation-tag" id="dv3" style="top:700px;right:70px;">
+                <span class="deviation-big">±12°</span>角度偏差
+            </div>
+            
+        <div class="meas-ref-line" id="rl3a" style="top:440px;left:0px;width:0;"></div>
+<div class="meas-deviation-line" id="rl3b" style="top:460px;left:100px;width:0;"></div>
+
+        
+            <div class="count-badge" id="cb3" style="top:1020px;right:80px;">2</div>
+            
+        <div style="position:absolute;top:80px;left:60px;color:#00e676;font-size:26px;font-weight:700;letter-spacing:0.15em;z-index:11;background:rgba(0,230,118,0.08);border:1px solid rgba(0,230,118,0.2);padding:8px 24px;border-radius:8px;" id="lbl3">② 再看脸</div>
+        
+
+        <div style="width:1080px;height:1920px;overflow:hidden;position:absolute;" data-layout-allow-overflow>
+            <img src="assets/img2_group_photo.png" style="position:absolute;width:1080px;height:1920px;object-fit:cover;will-change:transform;transform-origin:500px 1400px;" id="img4" />
+        </div>
+        <div style="position:absolute;bottom:0;left:0;width:1080px;height:700px;background:linear-gradient(to top,rgba(6,6,11,0.95),rgba(6,6,11,0.5),transparent);"></div>
+        <div style="position:absolute;top:0;left:0;width:1080px;height:200px;background:linear-gradient(to bottom,rgba(6,6,11,0.7),transparent);"></div>
+        
+            <div class="neon-circle" id="mk4a" style="width:110px;height:110px;top:1345px;left:385px;"></div>
+            
+            <div class="neon-circle" id="mk4b" style="width:110px;height:110px;top:1365px;left:505px;"></div>
+            
+        <div class="keyword-tag" id="kw4" style="top:760px;left:100px;background:#ff1744;">关节僵直</div>
+        
+            <div class="deviation-tag" id="dv4" style="top:700px;right:70px;">
+                <span class="deviation-big">0°</span>弯曲角度
+            </div>
+            
+        <div class="joint-straight-line" id="rl4a" style="top:1410px;left:400px;width:0;"></div>
+
+        
+            <div class="count-badge" id="cb4" style="top:1020px;right:80px;">3</div>
+            
+        <div style="position:absolute;top:80px;left:60px;color:#00e676;font-size:26px;font-weight:700;letter-spacing:0.15em;z-index:11;background:rgba(0,230,118,0.08);border:1px solid rgba(0,230,118,0.2);padding:8px 24px;border-radius:8px;" id="lbl4">③ 看关节</div>
+        
+
+        <div style="position:absolute;top:0;left:0;width:1080px;height:1920px;background:radial-gradient(ellipse at 50% 40%,#0d1b2a 0%,#06060b 70%);"></div>
+        <div class="compare-wrap" id="cmpWrap">
+            <div class="compare-half" id="cmpAI">
+                <img src="assets/img2_group_photo.png" />
+                <div class="compare-badge badge-ai">✗ AI生成</div>
+            </div>
+            <div class="compare-half" id="cmpReal">
+                <img src="assets/real_group_generated.png" />
+                <div class="compare-badge badge-real">✓ 真人照片</div>
+            </div>
+        </div>
+        <div class="compare-divider" id="cmpDiv">VS</div>
+        <div style="position:absolute;bottom:300px;left:30px;right:30px;display:flex;flex-direction:column;gap:10px;z-index:12;" id="chklist">
+            
+            <div class="checklist-row" id="chk1">
+                <span class="checklist-label">手指数量</span>
+                <span class="checklist-fail">✗ 6根</span>
+                <span class="checklist-pass" style="opacity:0;">✓ 5根</span>
+            </div>
+            
+            <div class="checklist-row" id="chk2">
+                <span class="checklist-label">五官对称</span>
+                <span class="checklist-fail">✗ 歪了</span>
+                <span class="checklist-pass" style="opacity:0;">✓ 对称</span>
+            </div>
+            
+            <div class="checklist-row" id="chk3">
+                <span class="checklist-label">关节弯曲</span>
+                <span class="checklist-fail">✗ 僵直</span>
+                <span class="checklist-pass" style="opacity:0;">✓ 自然</span>
+            </div>
+            
+        </div>
+        <div style="position:absolute;bottom:0;left:0;width:1080px;height:380px;background:linear-gradient(to top,rgba(6,6,11,0.95),rgba(6,6,11,0.5),transparent);"></div>
+        <div style="position:absolute;bottom:180px;left:60px;right:60px;z-index:10;text-align:center;" id="txt5">
+            <div style="display:inline-block;background:rgba(0,0,0,0.78);border-radius:18px;padding:24px 44px;border:1px solid rgba(255,255,255,0.06);">
+                <div style="color:#fff;font-size:50px;font-weight:700;line-height:1.5;text-shadow:0 2px 16px rgba(0,0,0,0.9);letter-spacing:0.03em;">记住查三处：手 · 脸 · 关节</div>
+            </div>
+        </div>
+        
+
+        <div style="position:absolute;top:0;left:0;width:1080px;height:1920px;background:radial-gradient(ellipse at 50% 40%,#0d1b2a,#06060b 70%);"></div>
+        <div style="position:absolute;top:400px;left:50%;margin-left:-150px;width:300px;height:300px;border-radius:50%;border:2px solid rgba(0,230,118,0.12);" id="oring"></div>
+        <div style="position:absolute;top:420px;left:50%;margin-left:-130px;width:260px;height:260px;border-radius:50%;
+            background:radial-gradient(circle,rgba(0,230,118,0.1) 0%,rgba(0,230,118,0.02) 70%);
+            border:2px solid rgba(0,230,118,0.2);
+            display:flex;align-items:center;justify-content:center;" id="ologo">
+            <span style="color:#00e676;font-size:88px;font-weight:900;">鉴</span>
+        </div>
+        <div id="otitle" style="position:absolute;top:740px;left:80px;right:80px;text-align:center;color:#fff;font-size:64px;font-weight:900;">AI照妖镜</div>
+        <div id="osub" style="position:absolute;top:850px;left:80px;right:80px;text-align:center;color:#00e676;font-size:36px;font-weight:600;">关注我，下次被骗的不是你</div>
+        <div id="oteaser" style="position:absolute;top:960px;left:80px;right:80px;text-align:center;color:#888;font-size:30px;">下期：5个AI检测工具横评 →</div>
+        
+  <div class="scan-overlay" id="scanOverlay"></div>
+  <div class="scan-line" id="scanLine" style="top:0;"></div>
+  <div class="progress-wrap"><div class="progress-fill" id="progressFill"></div>
+    <div class="progress-dot" style="left:10.6%;"></div>
+    <div class="progress-dot" style="left:30.8%;"></div>
+    <div class="progress-dot" style="left:46.2%;"></div>
+    <div class="progress-dot" style="left:61.5%;"></div>
+    <div class="progress-dot" style="left:80.8%;"></div>
+  </div>
+
+</body>
+</html>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// HyperFrames timeline
+// ═══════════════════════════════════════════════════════════
+var E = "power3.inOut";
+var tl = gsap.timeline({ paused: true });
+
+// ── Global timeline registration ──
+window.__timelines = window.__timelines || {};
+window.__timelines["main"] = tl;
+
+
+        // Social frame build-up
+        tl.set("#smBg",{opacity:0},0.0);
+        tl.to("#smBg",{opacity:1,duration:0.4,ease:"power3.out"},0.1);
+        tl.from("#smStatus",{opacity:0,y:-30,duration:0.35,ease:"power3.out"},0.2);
+        tl.from("#smHdr",{opacity:0,y:-20,duration:0.35,ease:"power3.out"},0.35);
+        tl.from("#smUser",{opacity:0,x:-30,duration:0.45,ease:"power3.out"},0.6);
+        tl.from("#smText",{opacity:0,y:10,duration:0.4,ease:"power3.out"},0.9);
+        tl.from("#smPhoto",{opacity:0,scale:0.96,duration:0.6,ease:"power3.out"},1.1);
+        tl.from("#smActions",{opacity:0,duration:0.4,ease:"power3.out"},1.5);
+        tl.from("#smLikes",{opacity:0,duration:0.4,ease:"power3.out"},1.8);
+        tl.to("#smLikes",{scale:1.04,duration:0.3,yoyo:true,repeat:1,ease:"sine.inOut"},2.2);
+        tl.from("#smComments>*:nth-child(1)",{opacity:0,x:-20,duration:0.35,ease:"power3.out"},2.3);
+        tl.from("#smComments>*:nth-child(2)",{opacity:0,x:-20,duration:0.35,ease:"power3.out"},2.7);
+        tl.from("#smComments>*:nth-child(3)",{opacity:0,x:-20,duration:0.35,ease:"power3.out"},3.1);
+        tl.to("#smPhoto img",{scale:1.04,duration:6,ease:"none"},0.0);
+        
+
+        // Subtle glitch hint
+        tl.to("#glVcr",{opacity:0.25,duration:0.08},3.5);
+        tl.to("#glVcr",{opacity:0,duration:0.06},3.58);
+        tl.to("#glR",{opacity:0.12,duration:0.05},3.65);
+        tl.to("#glR",{opacity:0,duration:0.04},3.7);
+
+        // Stronger glitch
+        tl.to("#glVcr",{opacity:0.5,duration:0.06},4.1);
+        tl.to("#glVcr",{opacity:0,duration:0.04},4.16);
+        tl.to("#glS1",{opacity:0.6,duration:0.04},4.12);
+        tl.to("#glS1",{opacity:0,duration:0.03},4.16);
+        tl.to("#glR",{opacity:0.2,duration:0.04},4.14);
+        tl.to("#glB",{opacity:0.2,duration:0.04},4.15);
+        tl.to("#glR",{opacity:0,duration:0.03},4.18);
+        tl.to("#glB",{opacity:0,duration:0.03},4.1899999999999995);
+
+        // THE BIG GLITCH
+        tl.to("#glVcr",{opacity:0.7,duration:0.08},4.6);
+        tl.to("#glR",{opacity:0.35,duration:0.06},4.62);
+        tl.to("#glG",{opacity:0.2,duration:0.05},4.64);
+        tl.to("#glB",{opacity:0.3,duration:0.06},4.63);
+        tl.to("#glS1",{opacity:0.7,duration:0.06},4.66);
+        tl.to("#glS2",{opacity:0.55,duration:0.05},4.68);
+        tl.to("#glS3",{opacity:0.6,duration:0.05},4.65);
+
+        // Clear
+        tl.to("#glVcr",{opacity:0,duration:0.06},4.8);
+        tl.to("#glR",{opacity:0,duration:0.05},4.78);
+        tl.to("#glG",{opacity:0,duration:0.05},4.8);
+        tl.to("#glB",{opacity:0,duration:0.05},4.79);
+        tl.to("#glS1",{opacity:0,duration:0.04},4.76);
+        tl.to("#glS2",{opacity:0,duration:0.04},4.78);
+        tl.to("#glS3",{opacity:0,duration:0.04},4.77);
+
+        // Hide social frame
+        tl.to("#smPost",{opacity:0,duration:0.25},4.85);
+        tl.to("#smBg",{opacity:0,duration:0.3},4.9);
+        tl.to("#smStatus",{opacity:0,duration:0.2},4.8);
+        tl.to("#smHdr",{opacity:0,duration:0.2},4.8);
+        
+
+        tl.set("#s1Dark",{opacity:0},5.5);
+        tl.to("#s1Dark",{opacity:1,duration:0.5,ease:"power3.out"},5.6);
+        tl.set("#img1",{opacity:0,scale:1},5.6);
+        tl.to("#img1",{opacity:0.75,duration:0.6,ease:"power3.out"},5.7);
+        tl.from("#revealTxt",{opacity:0,scale:0.8,duration:0.5,ease:"back.out(2)"},6.0);
+        tl.to("#revealTxt",{scale:1.04,duration:0.3,yoyo:true,repeat:1,ease:"sine.inOut"},6.5);
+        tl.from("#anticTxt",{opacity:0,y:30,duration:0.5,ease:"power3.out"},7.2);
+        
+
+        // Zoom-analyze scene @ 8.000s
+        tl.set("#img2",{scale:1},8.0);
+        tl.to("#img2",{scale:2.6,duration:1.5,ease:"power3.inOut"},8.0);
+        tl.from("#lbl2",{opacity:0,x:-30,duration:0.4,ease:"power3.out"},8.6);
+        
+
+        tl.from("#mk2a",{opacity:0,scale:0.2,duration:0.5,ease:"back.out(2)"},10.0);
+        tl.to("#mk2a",{scale:1.12,duration:0.55,repeat:3,yoyo:true,ease:"sine.inOut"},10.5);
+        
+
+        tl.from("#mk2b",{opacity:0,scale:0.2,duration:0.5,ease:"back.out(2)"},10.8);
+        tl.to("#mk2b",{scale:1.12,duration:0.55,repeat:3,yoyo:true,ease:"sine.inOut"},11.3);
+        
+
+        tl.from("#kw2",{opacity:0,scale:0.3,y:-20,duration:0.5,ease:"back.out(2)"},10.0);
+        tl.to("#kw2",{y:-8,duration:0.8,repeat:2,yoyo:true,ease:"sine.inOut"},10.5);
+        
+tl.from("#dv2",{opacity:0,x:40,duration:0.45,ease:"power3.out"},11.5);
+
+
+        tl.from("#cb2",{opacity:0,scale:0,duration:0.5,ease:"back.out(2)"},12.0);
+        tl.to("#cb2",{scale:1.18,duration:0.4,repeat:2,yoyo:true,ease:"sine.inOut"},12.5);
+        
+tl.to("#img2",{scale:1.0,duration:0.9,ease:"power3.inOut"},7.0);
+
+
+        // Zoom-analyze scene @ 16.000s
+        tl.set("#img3",{scale:1},16.0);
+        tl.to("#img3",{scale:3.0,duration:1.5,ease:"power3.inOut"},16.0);
+        tl.from("#lbl3",{opacity:0,x:-30,duration:0.4,ease:"power3.out"},16.6);
+        
+
+        tl.from("#mk3a",{opacity:0,scale:0.2,duration:0.5,ease:"back.out(2)"},18.0);
+        tl.to("#mk3a",{scale:1.12,duration:0.55,repeat:3,yoyo:true,ease:"sine.inOut"},18.5);
+        
+
+        tl.from("#mk3b",{opacity:0,scale:0.2,duration:0.5,ease:"back.out(2)"},18.8);
+        tl.to("#mk3b",{scale:1.12,duration:0.55,repeat:3,yoyo:true,ease:"sine.inOut"},19.3);
+        
+
+        tl.from("#mk3c",{opacity:0,scale:0.2,duration:0.5,ease:"back.out(2)"},19.6);
+        tl.to("#mk3c",{scale:1.12,duration:0.55,repeat:3,yoyo:true,ease:"sine.inOut"},20.1);
+        
+
+        tl.from("#kw3",{opacity:0,scale:0.3,y:-20,duration:0.5,ease:"back.out(2)"},18.0);
+        tl.to("#kw3",{y:-8,duration:0.8,repeat:2,yoyo:true,ease:"sine.inOut"},18.5);
+        
+tl.to("#rl3a",{width:1080,duration:0.8,ease:"power3.out"},19.0);
+
+tl.to("#rl3b",{width:880,duration:0.8,ease:"power3.out"},19.3);
+
+tl.from("#dv3",{opacity:0,x:40,duration:0.45,ease:"power3.out"},20.0);
+
+
+        tl.from("#cb3",{opacity:0,scale:0,duration:0.5,ease:"back.out(2)"},21.0);
+        tl.to("#cb3",{scale:1.18,duration:0.4,repeat:2,yoyo:true,ease:"sine.inOut"},21.5);
+        
+tl.to("#img3",{scale:1.0,duration:0.9,ease:"power3.inOut"},7.0);
+
+
+        // Zoom-analyze scene @ 24.000s
+        tl.set("#img4",{scale:1},24.0);
+        tl.to("#img4",{scale:2.8,duration:1.5,ease:"power3.inOut"},24.0);
+        tl.from("#lbl4",{opacity:0,x:-30,duration:0.4,ease:"power3.out"},24.6);
+        
+
+        tl.from("#mk4a",{opacity:0,scale:0.2,duration:0.5,ease:"back.out(2)"},26.0);
+        tl.to("#mk4a",{scale:1.12,duration:0.55,repeat:3,yoyo:true,ease:"sine.inOut"},26.5);
+        
+
+        tl.from("#mk4b",{opacity:0,scale:0.2,duration:0.5,ease:"back.out(2)"},26.8);
+        tl.to("#mk4b",{scale:1.12,duration:0.55,repeat:3,yoyo:true,ease:"sine.inOut"},27.3);
+        
+
+        tl.from("#kw4",{opacity:0,scale:0.3,y:-20,duration:0.5,ease:"back.out(2)"},26.0);
+        tl.to("#kw4",{y:-8,duration:0.8,repeat:2,yoyo:true,ease:"sine.inOut"},26.5);
+        
+tl.to("#rl4a",{width:200,duration:0.8,ease:"power3.out"},27.0);
+
+tl.from("#dv4",{opacity:0,x:40,duration:0.45,ease:"power3.out"},27.5);
+
+
+        tl.from("#cb4",{opacity:0,scale:0,duration:0.5,ease:"back.out(2)"},28.5);
+        tl.to("#cb4",{scale:1.18,duration:0.4,repeat:2,yoyo:true,ease:"sine.inOut"},29.0);
+        
+tl.to("#img4",{scale:1.0,duration:0.9,ease:"power3.inOut"},7.0);
+
+
+        // Compare split-scene @ 32.000s
+        tl.from("#cmpAI",{opacity:0,x:-70,duration:0.65,ease:"power3.out"},32.3);
+        tl.from("#cmpReal",{opacity:0,x:70,duration:0.65,ease:"power3.out"},32.3);
+        tl.from("#cmpDiv",{opacity:0,scale:0.3,duration:0.45,ease:"back.out(2)"},32.7);
+        tl.to("#cmpDiv",{scale:1.06,duration:0.45,repeat:2,yoyo:true,ease:"sine.inOut"},33.3);
+        
+tl.from("#chk1",{opacity:0,x:-40,duration:0.4,ease:"power3.out"},33.9);
+tl.to("#chk1 .checklist-fail",{scale:1.15,duration:0.3,repeat:1,yoyo:true,ease:"sine.inOut"},35.7);
+tl.from("#chk2",{opacity:0,x:-40,duration:0.4,ease:"power3.out"},34.6);
+tl.to("#chk2 .checklist-fail",{scale:1.15,duration:0.3,repeat:1,yoyo:true,ease:"sine.inOut"},36.0);
+tl.from("#chk3",{opacity:0,x:-40,duration:0.4,ease:"power3.out"},35.3);
+tl.to("#chk3 .checklist-fail",{scale:1.15,duration:0.3,repeat:1,yoyo:true,ease:"sine.inOut"},36.300000000000004);
+tl.from("#txt5",{opacity:0,y:30,duration:0.5,ease:"power3.out"},33.3);
+
+        tl.from("#oring",{opacity:0,scale:0.3,duration:0.68,ease:"power3.out"},42.3);
+        tl.to("#oring",{scale:1.08,opacity:0.5,duration:3.5,ease:"none"},42.98);
+        tl.from("#ologo",{opacity:0,scale:0.3,duration:0.7,ease:"back.out(2)"},42.4);
+        tl.to("#ologo",{boxShadow:"0 0 90px rgba(0,230,118,0.35)",duration:1,repeat:2,yoyo:true,ease:"sine.inOut"},43.1);
+        tl.from("#otitle",{opacity:0,y:30,duration:0.6,ease:"power3.out"},43.2);
+        tl.from("#osub",{opacity:0,y:20,duration:0.5,ease:"power3.out"},43.8);
+        tl.from("#oteaser",{opacity:0,y:15,duration:0.5,ease:"power3.out"},44.7);
+        
+
+// ── Scan overlay ──
+tl.set("#scanOverlay",{opacity:0},0);
+tl.set("#scanLine",{opacity:0},0);
+tl.to("#scanOverlay",{opacity:1,duration:0.4},8.0);
+tl.to("#scanLine",{opacity:1,duration:0.4},8.0);
+tl.to("#scanOverlay",{opacity:0,duration:0.3},42.0);
+tl.to("#scanLine",{opacity:0,duration:0.3},42.0);
+tl.fromTo("#scanLine",{top:"-2%"},{top:"102%",duration:34.0,ease:"none"},8.0);
+
+// ── Progress bar ──
+tl.to("#progressFill",{width:"100%",duration:52.0,ease:"none"},0);
+
+// ── Audio playback ──
+tl.call(function(){ var a=document.getElementById("narration"); if(a)a.play(); },[],0);
+
+tl.play();
+</script>

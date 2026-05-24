@@ -1,0 +1,118 @@
+# AI照妖镜 单集内容配置
+# 使用方法：复制此文件，改名，改内容，不改代码
+
+episode:
+  id: "ep4_hand_flaw"
+  title: "手指异常识别"
+  episode_number: 4
+  type: "ai-flaw-detect"
+  # 主题破绽类型: hand | face | text | texture
+  flaw_type: "hand"
+
+# ── 素材 ──
+assets:
+  ai_image: "output/ep4_assets/ai_6fingers.jpg"
+  real_image: "output/ep4_assets/real_hand.jpg"
+  # AI图的破绽标注：圆圈的 x, y, 半径, 颜色
+  annotations:
+    - x: 320
+      y: 180
+      radius: 40
+      label: "6根手指"
+      color: "#ff1744"
+
+# ── 脚本（逐镜头口播文案）──
+script:
+  hook: "你看这张图，能发现哪里不对吗？"
+  reveal: "仔细看——AI 画了 6 根手指。正常人只有 5 根。"
+  detail_1: "而且手指之间的粘连非常不自然，像被胶水粘住了。"
+  detail_2: "再看指关节——AI 画的关节位置完全不对。"
+  compare: "这是真人的手。对比一下，区别一目了然。"
+  summary: "记住：AI 画手的最大破绽：1.手指数量 2.关节位置 3.手指粘连。"
+  outro: "关注AI照妖镜，下次被骗的不是你"
+
+# ── 视觉参数（覆盖 ai_flaw_detect.yaml 的默认值）──
+style_override:
+  font_size_title: 44      # 标题字号（默认44）
+  font_size_body: 28       # 正文字号（默认28）
+  font_size_keyword: 54    # 关键词标注字号（默认54）
+  annotation_color: "#ff1744"
+  zoom_scale: 2.6
+  zoom_duration: 5.0
+
+# ── 分镜表（每个镜头用哪个组件、什么参数）──
+scenes:
+  - component: "social-frame"
+    start: 0.0
+    duration: 3.0
+    config:
+      username: "小美"
+      avatar_letter: "美"
+      post_text: "这张图有点奇怪..."
+      post_time: "2小时前"
+      img_src: "ai_6fingers.jpg"
+      likes: "156"
+      comments:
+        - ["小芳", "哪里奇怪？"]
+        - ["阿杰", "手指好像不对"]
+        - ["小美 回复 阿杰", "我也觉得！"]
+
+  - component: "glitch-transition"
+    start: 2.5
+    duration: 2.0
+
+  - component: "reveal-text"
+    start: 4.0
+    duration: 3.0
+    config:
+      reveal_text: "AI画手翻车了——看这6根手指"
+      anticipation_text: "来，我放大给你看 ↓"
+      img_src: "ai_6fingers.jpg"
+
+  - component: "zoom-analyze"
+    start: 6.5
+    duration: 5.0
+    config:
+      label: "① 6根手指"
+      img_src: "ai_6fingers.jpg"
+      zoom_origin_x: 320
+      zoom_origin_y: 180
+      zoom_scale: 2.6
+      keyword_text: "6根手指"
+      keyword_color: "#ff1744"
+      markers:
+        - top: 30
+          left: 45
+          width: 12
+          height: 12
+        - top: 62
+          left: 48
+          width: 12
+          height: 12
+
+  - component: "compare-split"
+    start: 25.0
+    duration: 8.0
+    config:
+      label_left: "AI生成的假手"
+      label_right: "真人的手"
+      img_left: "ai_6fingers.jpg"
+      img_right: "real_hand.jpg"
+      verdict: "记住这个特征，下次一眼识别"
+
+  - component: "checklist-card"
+    start: 35.0
+    duration: 8.0
+    config:
+      title: "识别AI假手的3个技巧"
+      items:
+        - "数手指：正常5根，AI经常多画"
+        - "看关节：AI画的关节位置不对"
+        - "检查粘连：AI手指经常糊在一起"
+
+  - component: "outro"
+    start: 44.0
+    duration: 6.0
+    config:
+      slogan: "反诈APP帮你查，AI照妖镜教你看"
+      sub: "关注我，下次被骗的不是你"

@@ -1,0 +1,92 @@
+<h2>整体布局 — Hybrid Tabs 架构</h2>
+<p class="subtitle">四个标签页 + 顶部状态栏，一页搞定所有操作</p>
+
+<div class="mockup">
+  <div class="mockup-header">Auto Video Platform — 浏览器中的样子 (1080P)</div>
+  <div class="mockup-body" style="font-family: system-ui; color: #333;">
+
+    <!-- Top bar -->
+    <div style="background:#1a1a2e; color:#eee; padding:10px 16px; display:flex; align-items:center; justify-content:space-between; border-radius:6px 6px 0 0;">
+      <span style="font-weight:700; font-size:14px;">Auto Video Platform</span>
+      <span style="font-size:11px; color:#8be0a0;">LLM: DeepSeek ONLINE | TTS: Edge ONLINE</span>
+    </div>
+
+    <!-- Tabs -->
+    <div style="display:flex; background:#16213e; border-radius:0 0 6px 6px; margin-bottom:12px;">
+      <div style="padding:10px 18px; background:#0f3460; color:#e94560; font-weight:600; font-size:13px; border-radius:0 0 0 6px;">快速生成</div>
+      <div style="padding:10px 18px; color:#a0a0b0; font-size:13px;">批量队列</div>
+      <div style="padding:10px 18px; color:#a0a0b0; font-size:13px;">历史记录</div>
+      <div style="padding:10px 18px; color:#a0a0b0; font-size:13px;">设置</div>
+    </div>
+
+    <!-- Main content area mockup -->
+    <div style="display:flex; gap:12px;">
+      <!-- Left: config panel -->
+      <div style="flex:0 0 280px; background:#f8f9fa; border-radius:8px; padding:14px; border:1px solid #dee2e6;">
+        <div style="font-weight:700; font-size:13px; margin-bottom:10px; color:#555;">视频配置</div>
+        <div class="mock-input" style="margin-bottom:8px;">视频类型: 工厂宣传 ▼</div>
+        <div class="mock-input" style="margin-bottom:8px;">选题/主题: 无刷电机绕线机</div>
+        <div class="mock-input" style="margin-bottom:8px;">参考图片: [拖放或点击上传]</div>
+        <div class="mock-input" style="margin-bottom:8px;">TTS配音: 云希Neural ▼</div>
+        <div style="margin-top:12px;">
+          <div class="mock-button" style="width:100%; text-align:center; padding:10px; background:#e94560; color:#fff; border-radius:6px; font-size:14px; font-weight:600;">
+            一键生成视频
+          </div>
+        </div>
+        <div style="margin-top:8px; font-size:11px; color:#888;">预计耗时: ~90秒 | 7个阶段自动执行</div>
+      </div>
+
+      <!-- Right: preview/progress area -->
+      <div style="flex:1; background:#fff; border-radius:8px; padding:16px; border:1px solid #dee2e6; min-height:380px;">
+        <div style="font-weight:700; font-size:13px; margin-bottom:10px; color:#555;">实时进度</div>
+        <!-- Pipeline stages -->
+        <div style="font-size:12px; color:#28a745;">✓ Stage 1: 参考图分析</div>
+        <div style="font-size:12px; color:#28a745;">✓ Stage 2: AI脚本生成 (9个Beat, 51秒)</div>
+        <div style="font-size:12px; color:#28a745;">✓ Stage 3: 质量检查 (100分)</div>
+        <div style="font-size:12px; color:#ffc107; font-weight:600;">◎ Stage 4: TTS配音生成中...</div>
+        <div style="font-size:12px; color:#aaa;">○ Stage 5: 素材匹配</div>
+        <div style="font-size:12px; color:#aaa;">○ Stage 6: HTML组装</div>
+        <div style="font-size:12px; color:#aaa;">○ Stage 7: MP4渲染</div>
+
+        <!-- Script preview after stage 2 -->
+        <div style="margin-top:14px; background:#f0f4ff; border-radius:6px; padding:10px; font-size:12px;">
+          <strong>脚本预览:</strong><br>
+          Beat1 [钩子] "一台好的绕线机是怎么造出来的？"<br>
+          Beat2 [信任] "300%效率提升，0.01mm精度"<br>
+          Beat3 [欲望] "看这个线槽，均匀度肉眼可见"<br>
+          <span style="color:#888;">... 共9个Beat, 含收藏/转发/评论引导</span>
+        </div>
+
+        <!-- Output area -->
+        <div style="margin-top:14px; background:#e8f5e9; border-radius:6px; padding:10px; display:flex; align-items:center; gap:12px;">
+          <div style="width:80px; height:120px; background:#333; border-radius:4px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:10px;">视频预览</div>
+          <div>
+            <strong style="font-size:13px;">output.mp4</strong><br>
+            <span style="font-size:11px; color:#666;">1080x1920 | 51秒 | 984KB</span><br>
+            <span style="font-size:11px; color:#e94560;">▶ 点此播放</span> &nbsp; <span style="font-size:11px; color:#0f3460;">⬇ 下载</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <h3>布局设计原则</h3>
+  <div style="display:flex; gap:12px; margin-top:8px;">
+    <div style="flex:1; background:#f8f9fa; padding:12px; border-radius:6px; font-size:13px;">
+      <strong>⬅ 左侧 280px 固定配置栏</strong><br>
+      所有参数一目了然，不需要翻页。上传图片、选类型、填选题，一条龙。
+    </div>
+    <div style="flex:1; background:#f8f9fa; padding:12px; border-radius:6px; font-size:13px;">
+      <strong>➡ 右侧自适应预览区</strong><br>
+      实时显示7个阶段的进度 + 脚本预览 + 最终视频播放器。所有反馈集中在一个地方。
+    </div>
+    <div style="flex:1; background:#f8f9fa; padding:12px; border-radius:6px; font-size:13px;">
+      <strong>🔝 顶部状态栏</strong><br>
+      一眼看到LLM和TTS的在线状态，出了问题立刻知道切换哪个Provider。
+    </div>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top:16px;">这个整体布局看起来对吗？左边配置+右边预览+四标签切换？</p>

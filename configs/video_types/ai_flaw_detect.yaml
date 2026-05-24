@@ -1,0 +1,81 @@
+# AI破绽鉴定科普视频 — 首个测试用例
+# AI Flaw Detection — config for "AI照妖镜" Douyin science channel
+
+type: "ai-flaw-detect"
+description: "AI内容破绽鉴定科普视频，教普通人识别AI生成内容"
+
+# ---- Asset Analysis ----
+asset_analysis:
+  detectors:
+    - face        # 面部不对称
+    - hand        # 手指异常
+    - text        # OCR文字乱码
+    - texture     # 纹理塑料感/拼接痕
+  quality_detectors:
+    - sharpness   # 清晰度筛选
+    - color       # 色彩/曝光检查
+  flaw_threshold: 0.4        # 低于此分不展示
+  max_flaws_per_video: 5     # 最多展示5处破绽
+
+# ---- Visual Style ----
+style:
+  resolution: "1080x1920"    # 竖屏
+  fps: 24
+  background: "radial-gradient(#0d1b2a, #06060b)"
+  accent_color: "#00e676"    # 荧光绿，赛博朋克风
+  font_title: "Noto Sans SC Bold"
+  font_body: "Noto Sans SC"
+  subtitle_style: "outline"
+  highlight_style: "pulse_circle_red"  # 红色脉冲圆圈标注破绽
+
+# ---- Voice ----
+voice:
+  engine: "edge-tts"
+  voice: "zh-CN-YunxiNeural"  # 云希男声
+  speed: 1.1
+  pitch: 0
+
+# ---- Video Structure ----
+structure:
+  hook: 3         # 开场钩子秒数
+  reveal: 20      # 逐处标注破绽
+  compare: 10     # 真vs假对比
+  summary: 10     # 总结秒数
+  outro: 7        # 结尾关注引导秒数
+
+# ---- Script Tone ----
+script:
+  persona: "冷静犀利的AI鉴定专家，不啰嗦，每句话都有信息量"
+  hook_patterns:
+    - "这张{content_type}看起来正常对吧？放大{zoom}x后你会发现..."
+    - "AI又在骗你了——看到这个细节了吗？"
+    - "最近刷屏的这张图，有一个致命的破绽"
+  outro_line: "关注AI照妖镜，下次被骗的不是你"
+  max_words_per_shot: 35     # 每镜头最多35字口播
+
+# ---- Publishing (per platform) ----
+platforms:
+  douyin:
+    title_templates:
+      - "AI又翻车了！这次是{flaw_type}"
+      - "{count}秒识别AI假图的第{trick_num}招"
+      - "这张图里有一个致命破绽，你发现了吗"
+    best_times: ["19:00", "12:00", "21:00"]
+    hashtags: ["AI照妖镜", "AI识别", "AI真假辨别", "防骗指南", "AI鉴定"]
+    duration_range: [30, 60]
+  xiaohongshu:
+    title_templates:
+      - "教你一招识别AI假图｜第{trick_num}期"
+    generate_image_post: true
+  shipinhao:
+    title_templates:
+      - "AI造假越来越真，这{trick_num}个技巧帮你识别"
+    social_sharing_hook: true
+
+# ---- Quality Gate ----
+quality_gate:
+  min_flaw_score: 0.5        # 最低破绽分数
+  require_multi_dim: true    # 至少2个维度有破绽
+  subtitle_sync_tolerance: 0.2s
+  audio_loudness_target: -14
+  max_duration: 60

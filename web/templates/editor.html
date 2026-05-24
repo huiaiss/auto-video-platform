@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Auto Video Platform — AI短视频自动剪辑平台</title>
+<link rel="stylesheet" href="/static/editor.css">
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- Top Toolbar -->
+<!-- ═══════════════════════════════════════════════ -->
+<header id="topbar">
+  <div class="brand">
+    <span class="logo">&#9654;</span>
+    <span class="app-name">Auto Video Platform</span>
+  </div>
+
+  <div class="project-info">
+    <label>项目</label>
+    <span id="project-id" class="mono">—</span>
+  </div>
+
+  <div class="config-selectors">
+    <select id="video-type" class="sel">
+      <option value="ai_flaw_detect">AI破绽鉴定</option>
+      <option value="enterprise_promo">企业宣传视频</option>
+    </select>
+    <input id="brand-name" class="inp" placeholder="品牌名称（可选）" />
+  </div>
+
+  <nav class="workflow-steps">
+    <button class="wf-btn" data-step="upload" onclick="stepUpload()">
+      <span class="step-num">1</span> 上传分析
+    </button>
+    <span class="wf-arrow">→</span>
+    <button class="wf-btn" data-step="generate" onclick="stepGenerate()" disabled>
+      <span class="step-num">2</span> 生成脚本
+    </button>
+    <span class="wf-arrow">→</span>
+    <button class="wf-btn" data-step="tts" onclick="stepTTS()" disabled>
+      <span class="step-num">3</span> 语音合成
+    </button>
+    <span class="wf-arrow">→</span>
+    <button class="wf-btn" data-step="preview" onclick="stepPreview()" disabled>
+      <span class="step-num">4</span> 预览
+    </button>
+    <span class="wf-arrow">→</span>
+    <button class="wf-btn primary" data-step="export" onclick="stepExport()" disabled>
+      <span class="step-num">5</span> 导出MP4
+    </button>
+  </nav>
+
+  <div id="topbar-status" class="status-text"></div>
+</header>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- Main Layout -->
+<!-- ═══════════════════════════════════════════════ -->
+<div id="main-layout">
+
+  <!-- ── Left Panel ── -->
+  <aside id="left-panel">
+    <div class="panel-tabs">
+      <button class="tab active" data-tab="assets-pane">素材</button>
+      <button class="tab" data-tab="report-pane">分析</button>
+    </div>
+
+    <!-- Assets Pane -->
+    <div id="assets-pane" class="pane active">
+      <div class="upload-zone" id="upload-zone">
+        <input type="file" id="file-input" multiple accept="image/*,video/*" hidden />
+        <div class="upload-hint">
+          <span class="upload-icon">+</span>
+          <span>点击或拖拽上传素材</span>
+        </div>
+      </div>
+      <div id="asset-list" class="asset-list"></div>
+    </div>
+
+    <!-- Report Pane -->
+    <div id="report-pane" class="pane">
+      <div id="report-content" class="report-placeholder">
+        请先上传素材并分析
+      </div>
+    </div>
+  </aside>
+
+  <!-- ── Center: Timeline ── -->
+  <main id="center-panel">
+    <div class="timeline-header">
+      <h3>分镜时间线</h3>
+      <span id="total-duration" class="mono">00:00</span>
+    </div>
+    <div id="timeline" class="timeline-track">
+      <div class="timeline-placeholder">上传素材并生成脚本后，分镜将显示在这里</div>
+    </div>
+    <div class="timeline-ruler" id="timeline-ruler"></div>
+  </main>
+
+  <!-- ── Right Panel: Preview ── -->
+  <aside id="right-panel">
+    <div class="preview-container">
+      <div class="preview-header">
+        <h3>实时预览</h3>
+        <span id="preview-time" class="mono">00:00 / 00:00</span>
+      </div>
+      <div class="preview-frame-wrapper">
+        <iframe id="preview-frame"
+          sandbox="allow-scripts allow-same-origin"
+          style="width:405px;height:720px;border:none;background:#0d1b2a;">
+        </iframe>
+      </div>
+      <div class="preview-controls">
+        <button id="btn-play" onclick="togglePlay()" disabled>▶</button>
+        <input type="range" id="seek-bar" min="0" max="100" value="0" step="0.1"
+          oninput="seekPreview(this.value)" disabled />
+        <button id="btn-mute" onclick="toggleMute()" disabled>🔊</button>
+      </div>
+    </div>
+
+    <!-- Audio Player -->
+    <div class="audio-section">
+      <div class="audio-header">
+        <span>旁白音频</span>
+        <span id="audio-duration" class="mono"></span>
+      </div>
+      <audio id="audio-player" controls style="width:100%;display:none;"></audio>
+      <div id="audio-placeholder" class="audio-placeholder">生成TTS后可用</div>
+    </div>
+  </aside>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- Bottom Panel: Script Editor -->
+<!-- ═══════════════════════════════════════════════ -->
+<section id="bottom-panel">
+  <div class="panel-tabs">
+    <button class="tab active" data-tab="script-json-pane">Script JSON</button>
+    <button class="tab" data-tab="storyboard-table-pane">分镜表</button>
+    <button class="tab" data-tab="tts-pane">字幕/SRT</button>
+  </div>
+
+  <!-- Script JSON Editor -->
+  <div id="script-json-pane" class="pane active">
+    <div class="editor-toolbar">
+      <button onclick="applyScriptEdits()" class="btn-sm primary">应用修改</button>
+      <button onclick="revertScriptEdits()" class="btn-sm">还原</button>
+    </div>
+    <textarea id="script-editor" class="code-editor" spellcheck="false"></textarea>
+  </div>
+
+  <!-- Storyboard Table -->
+  <div id="storyboard-table-pane" class="pane">
+    <div class="editor-toolbar">
+      <button onclick="addShotRow()" class="btn-sm">+ 添加镜头</button>
+      <button onclick="applyStoryboardEdits()" class="btn-sm primary">应用修改</button>
+    </div>
+    <div class="table-wrap">
+      <table id="storyboard-table">
+        <thead>
+          <tr>
+            <th>镜号</th><th>时长</th><th>画面描述</th><th>口播文案</th><th>字幕文案</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TTS / SRT Pane -->
+  <div id="tts-pane" class="pane">
+    <div class="editor-toolbar">
+      <label>语音：<select id="tts-voice" class="sel-sm">
+        <option value="zh-CN-YunxiNeural" selected>Yunxi (男·云希)</option>
+        <option value="zh-CN-YunyangNeural">Yunyang (男·云扬)</option>
+        <option value="zh-CN-XiaoxiaoNeural">Xiaoxiao (女·晓晓)</option>
+        <option value="zh-CN-XiaoyiNeural">Xiaoyi (女·晓伊)</option>
+      </select></label>
+      <label>语速：<input id="tts-speed" type="range" min="0.5" max="2.0" step="0.1" value="1.0" />
+        <span id="tts-speed-val">1.0x</span></label>
+    </div>
+    <pre id="srt-display" class="srt-view">生成TTS后字幕将显示在这里</pre>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- Status Toast -->
+<!-- ═══════════════════════════════════════════════ -->
+<div id="toast" class="toast hidden"></div>
+
+<!-- Loading Overlay -->
+<div id="loading" class="loading-overlay hidden">
+  <div class="spinner"></div>
+  <div id="loading-msg" class="loading-msg"></div>
+</div>
+
+<script src="/static/editor.js"></script>
+</body>
+</html>

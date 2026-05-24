@@ -1,0 +1,97 @@
+<h2>快速生成 — 交互流程设计</h2>
+<p class="subtitle">一键到底 vs 逐步确认？两种模式都支持，顶部开关切换</p>
+
+<div class="mockup">
+  <div class="mockup-header">生成模式切换</div>
+  <div class="mockup-body" style="font-family: system-ui; padding:12px;">
+
+    <!-- Mode toggle -->
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:16px; background:#f8f9fa; padding:10px; border-radius:8px;">
+      <span style="font-weight:700; font-size:13px;">生成模式:</span>
+      <span style="padding:6px 16px; background:#e94560; color:#fff; border-radius:20px; font-size:12px; font-weight:600;">一键到底</span>
+      <span style="padding:6px 16px; color:#888; font-size:12px;">逐步确认</span>
+      <span style="font-size:11px; color:#aaa; margin-left:auto;">逐步模式下每阶段完成后暂停，点"继续"才下一步</span>
+    </div>
+
+    <!-- Stage 1: idle -->
+    <div style="border-left:3px solid #e94560; padding:10px 14px; margin-bottom:6px; background:#fff; border-radius:0 6px 6px 0;">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <span style="font-weight:700; font-size:13px; color:#e94560;">● Stage 2: AI脚本生成</span>
+          <span style="font-size:11px; color:#888; margin-left:8px;">进行中...</span>
+        </div>
+        <span style="font-size:11px; color:#aaa;">~15s</span>
+      </div>
+      <div style="margin-top:8px; background:#f0f4ff; border-radius:4px; padding:8px; font-size:12px; line-height:1.6;">
+        Beat1 [钩子] 3.0s "一台好的绕线机是怎么造出来的？"<br>
+        Beat2 [信任] 5.0s "这个线槽，均匀度肉眼可见"<br>
+        Beat3 [惊讶] 5.0s "放大300%看精度——0.01毫米"<br>
+        <span style="color:#888;">... 共9个Beat，含 💾收藏 💬评论 ↗转发 触发点</span>
+      </div>
+      <div style="margin-top:6px; display:flex; gap:8px;">
+        <span style="font-size:10px; padding:2px 8px; background:#d4edda; border-radius:10px; color:#155724;">质量: 100分</span>
+        <span style="font-size:10px; padding:2px 8px; background:#fff3cd; border-radius:10px; color:#856404; cursor:pointer;">✎ 编辑脚本</span>
+      </div>
+    </div>
+
+    <!-- Stage with audio preview -->
+    <div style="border-left:3px solid #ddd; padding:10px 14px; margin-bottom:6px; background:#fafafa; border-radius:0 6px 6px 0;">
+      <div style="font-weight:700; font-size:13px; color:#555;">○ Stage 4: TTS配音</div>
+      <div style="margin-top:6px; display:flex; align-items:center; gap:8px;">
+        <span style="font-size:12px;">▶</span>
+        <div style="flex:1; height:24px; background:#e9ecef; border-radius:12px; overflow:hidden;">
+          <div style="width:60%; height:100%; background:#e94560; border-radius:12px;"></div>
+        </div>
+        <span style="font-size:11px; color:#888;">51s / 56s</span>
+      </div>
+      <span style="font-size:11px; color:#e94560; cursor:pointer;">▶ 试听</span>
+      <span style="font-size:11px; color:#0f3460; cursor:pointer; margin-left:12px;">📄 字幕预览</span>
+    </div>
+
+    <!-- Completed stages -->
+    <div style="border-left:3px solid #28a745; padding:8px 14px; background:#f8fff8; border-radius:0 6px 6px 0; opacity:0.7;">
+      <span style="font-size:12px; color:#28a745;">✓ Stage 1: 参考图分析 (完成)</span>
+    </div>
+
+    <!-- Pending stages -->
+    <div style="border-left:3px solid #eee; padding:8px 14px; opacity:0.5;">
+      <span style="font-size:12px; color:#aaa;">○ Stage 5: 素材匹配</span><br>
+      <span style="font-size:12px; color:#aaa;">○ Stage 6: HTML组装</span><br>
+      <span style="font-size:12px; color:#aaa;">○ Stage 7: MP4渲染</span>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top:16px;">
+  <h3>两种模式的区别</h3>
+  <div class="split">
+    <div class="mockup" style="flex:1;">
+      <div class="mockup-header">一键到底模式</div>
+      <div class="mockup-body" style="font-size:12px; padding:10px;">
+        <p>点击"生成"后 → 7个阶段自动跑完 → 弹出视频播放</p>
+        <p style="color:#888;">适合：信任AI能力、追求效率</p>
+        <p style="color:#e94560;">特点：最快90秒出片</p>
+        <ul style="font-size:11px;">
+          <li>每阶段完成后折叠显示概要</li>
+          <li>出现质量问题时自动暂停</li>
+          <li>任何时候可点"暂停"切到逐步模式</li>
+        </ul>
+      </div>
+    </div>
+    <div class="mockup" style="flex:1;">
+      <div class="mockup-header">逐步确认模式</div>
+      <div class="mockup-body" style="font-size:12px; padding:10px;">
+        <p>Stage 2完成 → 审脚本，点"继续" → Stage 3质检 → 点"继续" → ...</p>
+        <p style="color:#888;">适合：新选题、不确定AI质量、想精细控制</p>
+        <p style="color:#e94560;">关键卡点：脚本和配音生成后各暂停一次</p>
+        <ul style="font-size:11px;">
+          <li>脚本暂停：可编辑beat文本/动画/时长</li>
+          <li>配音暂停：可试听、换TTS提供商</li>
+          <li>素材暂停：可替换不满意的图片</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<p class="subtitle" style="margin-top:16px;">这个双模式设计——一键到底 vs 逐步确认，你觉得合理吗？</p>

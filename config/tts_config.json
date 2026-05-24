@@ -1,0 +1,66 @@
+{
+  "default_voice": "zh-CN-YunxiNeural",
+  "default_speed": 1.1,
+  "pause_between_shots_s": 0.35,
+
+  "providers": [
+    {
+      "name": "edge_tts",
+      "display_name": "Edge TTS (Microsoft)",
+      "description": "Free, high-quality Microsoft neural voices. No API key needed.",
+      "voices": [
+        "zh-CN-YunxiNeural", "zh-CN-YunyangNeural", "zh-CN-XiaoxiaoNeural",
+        "zh-CN-YunjianNeural", "zh-CN-XiaoyiNeural", "zh-CN-YunxiaNeural"
+      ],
+      "priority": 1,
+      "enabled": true,
+      "word_timestamps": false
+    },
+    {
+      "name": "cosyvoice",
+      "display_name": "CosyVoice (Ali)",
+      "description": "Alibaba's CosyVoice - word-level timestamps, high quality Chinese. Requires local installation.",
+      "models": ["cosyvoice-300m", "cosyvoice-300m-sft", "cosyvoice-300m-instruct"],
+      "default_model": "cosyvoice-300m-sft",
+      "voices": ["default", "chinese_male_1", "chinese_female_1"],
+      "priority": 2,
+      "enabled": false,
+      "word_timestamps": true,
+      "install_guide": "pip install cosyvoice && python -m cosyvoice.download"
+    },
+    {
+      "name": "coqui_tts",
+      "display_name": "Coqui TTS (Open Source)",
+      "description": "Open-source TTS with many models. Good for offline usage.",
+      "models": ["tts_models/zh-CN/baker/tacotron2-DDC-GST"],
+      "default_model": "tts_models/zh-CN/baker/tacotron2-DDC-GST",
+      "priority": 3,
+      "enabled": false,
+      "word_timestamps": false,
+      "install_guide": "pip install TTS"
+    },
+    {
+      "name": "openai_tts",
+      "display_name": "OpenAI TTS",
+      "description": "Premium quality. Requires OpenAI API key.",
+      "api_key_env": "OPENAI_API_KEY",
+      "models": ["tts-1", "tts-1-hd"],
+      "default_model": "tts-1",
+      "voices": ["alloy", "echo", "fable", "onyx", "nova", "shimmer"],
+      "priority": 4,
+      "enabled": false,
+      "word_timestamps": false
+    }
+  ],
+
+  "word_timestamp": {
+    "enabled": true,
+    "preferred_provider": "cosyvoice",
+    "format": "word_level",
+    "fallback_to_char_estimate": true,
+    "chars_per_second": {
+      "zh": 4.5,
+      "en": 12.0
+    }
+  }
+}
