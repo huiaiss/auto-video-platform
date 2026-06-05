@@ -1,0 +1,55 @@
+# Factory Promo ? 工厂宣传片配置
+# 用于实拍素材+动画叠加的企业宣传视频
+
+name: "factory_promo"
+display_name: "工厂宣传片"
+description: "实拍素材+动画叠加的企业宣传视频"
+
+canvas:
+  width: 1920
+  height: 1080
+  fps: 30
+
+component_set: "enterprise"
+
+brand_required: true
+video_material_required: true
+
+default_tts_voice: "zh-CN-YunxiNeural"
+default_tts_speed: 1.1
+
+narration_style: "专业、自信、有力"
+
+# 分镜配置
+beats:
+  hook:
+    duration_s: 4.0
+    emotion: "hook"
+    animation: "zoom"
+    component: "factory-panorama"
+  problem:
+    duration_s: 4.0
+    emotion: "curiosity"
+    animation: "slide"
+    component: "equipment-showcase"
+  solution:
+    duration_s: 5.0
+    emotion: "trust"
+    animation: "pulse"
+    component: "tech-highlight"
+  proof:
+    duration_s: 5.0
+    emotion: "desire"
+    animation: "zoom"
+    component: "client-case"
+  action:
+    duration_s: 4.0
+    emotion: "action"
+    animation: "slide"
+    component: "factory-panorama"
+
+outro:
+  component: "cta-enterprise"
+  duration_s: 5.0
+  emotion: "action"
+  animation: "fade"

@@ -1,0 +1,32 @@
+drawtext_filters = []
+
+    for i, (beat, st) in enumerate(zip(beats, start_times)):
+        text = beat.get("text", "")
+        et = st + beat.get("duration_s", 3)
+        anim = beat.get("animation", "fade")
+
+        escaped = text.replace("'", "'\\''").replace(":", "\uFF1A")
+        x_expr = "(w-text_w)/2"
+        y_expr = "h-th-100"
+        fade_in = 0.3
+        if anim == "fade":
+            alpha = f"if(lt(t-{st},{fade_in}),(t-{st})/{fade_in},if(lt(t,{et}-{fade_in}),1,({et}-t)/{fade_in}))"
+        elif anim == "slide":
+            alpha = f"if(lt(t-{st},{fade_in}),(t-{st})/{fade_in},1)"
+            x_expr = f"if(lt(t-{st},{fade_in}),w-(w-(w-text_w)/2)*(t-{st})/{fade_in},(w-text_w)/2)"
+        elif anim == "pulse":
+            alpha = f"if(lt(t-{st},{fade_in}),(t-{st})/{fade_in},1+0.1*sin(2*PI*3*(t-{st})))"
+        else:
+            alpha = f"if(lt(t-{st},{fade_in}),(t-{st})/{fade_in},1)"
+
+        box_args = "box=1:boxcolor=black@0.4:boxborderw=12"
+        filter_str = (
+            f"drawtext=text='{escaped}':"
+            f"x='{x_expr}':y='{y_expr}':"
+            f"fontfile='{font_path}':fontsize=34:fontcolor=white:"
+            f"alpha='{alpha}':{box_args}:"
+            f"enable='between(t,{st},{et})'"
+        )
+        drawtext_filters.append(filter_str)
+
+    full_filter = ",\n".join(drawtext_filters)

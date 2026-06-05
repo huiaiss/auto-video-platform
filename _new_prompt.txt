@@ -1,0 +1,72 @@
+﻿    if marketing_mode:
+        prompt = f"""你是短视频脚本编剧。为 {brand_name} 写一个营销短视频脚本。
+
+## 素材描述（画面分析）
+{frame_context}
+
+## 规则
+- 时长: {dur:.0f}s，每段 3-6s
+- 口语化中文，像朋友聊天
+- 禁止套话：品质卓越、行业领先、精益求精、值得信赖
+- 开头用痛点问题钩子
+- 结尾引导点击/咨询
+
+## 输出 JSON
+{{
+  "title": "标题 15字内",
+  "beats": [
+    {{
+      "index": 1,
+      "text": "口播文案",
+      "visual": "对应画面描述",
+      "animation": "zoom|fade|slide|pop|pulse|none",
+      "emotion": "hook|pain|solution|proof|action",
+      "duration_s": 4.0
+    }}
+  ],
+  "outro": {{
+    "text": "引导语",
+    "visual": "品牌 + CTA",
+    "duration_s": 5.0
+  }},
+  "total_duration_s": {dur:.0f},
+  "bgm_style": "{bgm_style}",
+  "tags": ["{tag_str}"]
+}}
+Return ONLY valid JSON, no markdown."""
+    else:
+        prompt = f"""你是短视频脚本编剧。为 {brand_name} 写一个内容分享短视频脚本。
+
+## 素材描述（画面分析）
+{frame_context}
+
+## 规则
+- 时长: {dur:.0f}s，每段 3-6s
+- 口语化中文，像业内人士分享经验
+- 禁止营销：不能说"点击"、"免费"、"咨询"
+- 开头可以是行业秘密/内行才知道的事
+- 结尾引导收藏/转发/关注
+
+## 输出 JSON
+{{
+  "title": "标题 15字内",
+  "beats": [
+    {{
+      "index": 1,
+      "text": "口播文案",
+      "visual": "对应画面描述",
+      "animation": "zoom|fade|slide|pop|pulse|none",
+      "emotion": "hook|curiosity|trust|admire|save",
+      "duration_s": 4.0
+    }}
+  ],
+  "outro": {{
+    "text": "收藏转发引导",
+    "visual": "品牌展示",
+    "duration_s": 5.0
+  }},
+  "total_duration_s": {dur:.0f},
+  "bgm_style": "{bgm_style}",
+  "tags": ["{tag_str}"]
+}}
+Return ONLY valid JSON, no markdown."""

@@ -1,0 +1,36 @@
+<!--  Footer EN  -->
+<footer class="lj-footer">
+  <div class="lj-footer-inner">
+    <div class="lj-footer-cols">
+      <div class="lj-footer-col">
+        <h4>Products</h4>
+        <ul>
+          <li><a href="/en/products/?cat=Winding Machine">Winding Machines</a></li>
+          <li><a href="/en/products/?cat=Magnet Machine">Magnet Machines</a></li>
+          <li><a href="/en/products/?cat=Paper Inserter">Paper Inserters</a></li>
+          <li><a href="/en/products/">All Products</a></li>
+        </ul>
+      </div>
+      <div class="lj-footer-col">
+        <h4>About</h4>
+        <ul>
+          <li><a href="/en/about/">Company</a></li>
+          <li><a href="/en/cases/">Case Studies</a></li>
+          <li><a href="/en/service/">Service</a></li>
+        </ul>
+      </div>
+      <div class="lj-footer-col">
+        <h4>Contact</h4>
+        <ul class="lj-footer-contact">
+          <li>📞 <a href="tel:18968693691">18968693691</a></li>
+          <li>✉ WeChat: ljzdh888</li>
+          <li>📍 Jiaojiang, Taizhou, Zhejiang</li>
+        </ul>
+      </div>
+    </div>
+    <div class="lj-footer-bottom">
+      <p>&copy; 2026 Taizhou Longjiang Automation Equipment Co., Ltd.</p>
+      <p class="lj-footer-tagline">AI-Powered Manufacturing Inquiry Factory</p>
+    </div>
+  </div>
+</footer>

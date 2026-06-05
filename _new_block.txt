@@ -1,0 +1,17 @@
+drawtext_filters = []
+
+    for i, (beat, st) in enumerate(zip(beats, start_times)):
+        text = beat.get("text", "")
+        et = st + beat.get("duration_s", 3)
+        enable_expr = "between(t\\," + str(st) + "\\," + str(et) + ")"
+        text_quoted = chr(39) + text.replace(chr(39), chr(39)*4) + chr(39)
+        f_str = (
+            "drawtext=text=" + text_quoted + ":"
+            "x=(w-text_w)/2:y=h-th-100:"
+            "fontfile='C\\:/Windows/Fonts/msyh.ttc':fontsize=34:fontcolor=white:"
+            "box=1:boxcolor=black@0.4:boxborderw=12:"
+            "enable=" + chr(39) + enable_expr + chr(39)
+        )
+        drawtext_filters.append(f_str)
+
+    full_filter = ",".join(drawtext_filters)

@@ -1,0 +1,9 @@
+<div class="section"><div class="section-inner" style="max-width:900px">
+<div class="section-header"><div class="section-label">⭐ CASES</div>
+<h2 class="section-title">客户案例</h2>
+<p class="section-sub">让每台设备在客户现场发挥价值</p></div>
+<div style="text-align:center;padding:60px 20px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);">
+<div style="font-size:64px;margin-bottom:20px;">🏆</div>
+<h3 style="font-size:20px;margin-bottom:12px;">案例内容整理中</h3>
+<p style="color:var(--text-secondary);margin-bottom:24px;">我们的设备已服务于多家电机、家电及汽车零部件企业。</p>
+<p style="color:var(--text-secondary);">如需了解同行应用情况，请联系我们获取详情。</p></div></div>

@@ -1,0 +1,15 @@
+# Security & cache headers
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Cache-Control: public, max-age=3600
+
+*.html
+  Cache-Control: public, max-age=3600
+
+/products/*.html
+  Cache-Control: public, max-age=7200
+
+/en/products/*.html
+  Cache-Control: public, max-age=7200

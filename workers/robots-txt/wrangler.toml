@@ -1,0 +1,8 @@
+name = "robots-txt-override"
+main = "index.js"
+compatibility_date = "2025-01-01"
+
+routes = [
+  { pattern = "longjiang-ai.com/robots.txt", zone_name = "longjiang-ai.com" },
+  { pattern = "www.longjiang-ai.com/robots.txt", zone_name = "longjiang-ai.com" }
+]

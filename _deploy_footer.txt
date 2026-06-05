@@ -1,0 +1,36 @@
+<!-- ═══ Footer CN ═══ -->
+<footer class="lj-footer">
+  <div class="lj-footer-inner">
+    <div class="lj-footer-cols">
+      <div class="lj-footer-col">
+        <h4>产品中心</h4>
+        <ul>
+          <li><a href="/products/?cat=绕线机">绕线机系列</a></li>
+          <li><a href="/products/?cat=磁钢机">磁钢机系列</a></li>
+          <li><a href="/products/?cat=插纸机">插纸机系列</a></li>
+          <li><a href="/products/">全部设备</a></li>
+        </ul>
+      </div>
+      <div class="lj-footer-col">
+        <h4>关于我们</h4>
+        <ul>
+          <li><a href="/about/">公司介绍</a></li>
+          <li><a href="/cases/">客户案例</a></li>
+          <li><a href="/service/">服务承诺</a></li>
+        </ul>
+      </div>
+      <div class="lj-footer-col">
+        <h4>联系方式</h4>
+        <ul class="lj-footer-contact">
+          <li>📞 <a href="tel:18968693691">18968693691</a></li>
+          <li>✉ 微信: ljzdh888</li>
+          <li>📍 浙江台州椒江区刘洋工业园区</li>
+        </ul>
+      </div>
+    </div>
+    <div class="lj-footer-bottom">
+      <p>© 2026 台州隆江自动化设备有限公司 &nbsp;|&nbsp; 让绕线更智能</p>
+      <p class="lj-footer-tagline">制造业AI询盘工厂 — 让每一台设备被精准找到</p>
+    </div>
+  </div>
+</footer>

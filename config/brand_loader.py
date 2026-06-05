@@ -1,4 +1,4 @@
-"""品牌配置加载器 — 消灭硬编码 'AI照妖镜'。
+"""品牌配置加载器 — 从配置文件读取品牌信息。
 
 Usage:
     from config.brand_loader import get_brand
@@ -45,7 +45,7 @@ def get_brand(brand_key: str = None) -> dict:
 
 def get_brand_name() -> str:
     """快捷方法：只取品牌名称。"""
-    return get_brand().get("brand_name", "AI照妖镜")
+    return get_brand().get("brand_name", "内容分析")
 
 
 def get_slogan() -> str:

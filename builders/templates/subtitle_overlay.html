@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=1080, height=1920" />
+  <title>HyperFrames — 动画字幕</title>
+  <script src="static/gsap.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 1080px; height: 1920px; overflow: hidden;
+      background: #00ff00;  /* 绿幕 chroma key */
+      font-family: "Noto Sans SC", "Microsoft YaHei", "PingFang SC", sans-serif;
+    }
+
+    /* ── Subtitle container ── */
+    .sub-container {
+      position: absolute;
+      bottom: 160px;
+      left: 60px;
+      right: 60px;
+      z-index: 10;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .sub-line {
+      display: inline-block;
+      font-size: 38px;
+      font-weight: 700;
+      line-height: 1.6;
+      letter-spacing: 0.04em;
+      color: #ffffff;
+      background: rgba(0, 0, 0, 0.72);
+      padding: 14px 32px;
+      border-radius: 14px;
+      opacity: 0;  /* GSAP 控制入场 */
+      transform: translateY(30px);  /* GSAP 滑入起点 */
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+
+    /* 关键词高亮 */
+    .sub-line .hl {
+      color: #00a8ff;  /* 品牌高亮蓝 */
+      font-weight: 900;
+      text-shadow: 0 0 20px rgba(0, 168, 255, 0.4);
+    }
+
+    .sub-line .hl-gold {
+      color: #FFD700;
+      font-weight: 900;
+      text-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+    }
+
+    /* ── Progress bar (底部装饰) ── */
+    .progress-track {
+      position: absolute;
+      bottom: 80px;
+      left: 60px;
+      right: 60px;
+      height: 3px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 2px;
+      z-index: 5;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #0057b8, #00a8ff);
+      border-radius: 2px;
+    }
+
+    /* ── Brand watermark ── */
+    .watermark {
+      position: absolute;
+      bottom: 30px;
+      right: 40px;
+      color: rgba(255, 255, 255, 0.12);
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      z-index: 1;
+    }
+
+    /* ── Frame counter (debug) ── */
+    .frame-counter {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      color: rgba(0, 255, 0, 0.5);
+      font-size: 16px;
+      font-family: monospace;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 绿幕背景 -->
+  <div style="position:absolute;top:0;left:0;width:1080px;height:1920px;background:#00ff00;"></div>
+
+  <!-- 字幕容器 -->
+  <div class="sub-container" id="subContainer">
+    <!-- beats will be injected by Python -->
+  </div>
+
+  <!-- 进度条 -->
+  <div class="progress-track">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+
+  <!-- 品牌水印 -->
+  <div class="watermark" id="watermark">台州隆江自动化</div>
+
+  <!-- 帧计数器 -->
+  <div class="frame-counter" id="frameCounter">--</div>
+
+</body>
+</html>

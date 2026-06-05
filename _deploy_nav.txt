@@ -1,0 +1,30 @@
+<!-- ═══ 导航 Nav CN ═══ -->
+<nav class="lj-nav" id="ljNav">
+  <div class="lj-nav-inner">
+    <a href="/" class="lj-nav-brand">
+      <span class="lj-nav-dot"></span>
+      <span class="lj-nav-name">台州隆江自动化</span>
+    </a>
+    <button class="lj-nav-toggle" id="ljNavToggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="lj-nav-links" id="ljNavLinks">
+      <li><a href="/">首页</a></li>
+      <li class="lj-dropdown">
+        <a href="javascript:void(0)">产品 <span class="lj-dropdown-arrow">▼</span></a>
+        <ul class="lj-dropdown-menu">
+          <li><a href="/products/">全部产品</a></li>
+          <li><a href="/products/?cat=绕线机">绕线机</a></li>
+          <li><a href="/products/?cat=磁钢机">磁钢机</a></li>
+          <li><a href="/products/?cat=插纸机">插纸机</a></li>
+          <li><a href="/products/?cat=其他">其他设备</a></li>
+        </ul>
+      </li>
+      <li><a href="/videos/">视频</a></li>
+      <li><a href="/cases/">案例</a></li>
+      <li><a href="/about/">关于</a></li>
+      <li><a href="/contact/" class="lj-nav-cta">📞 联系</a></li>
+      <li><a href="javascript:toggleLang()" class="lj-nav-lang">🌐 English</a></li>
+    </ul>
+  </div>
+</nav>

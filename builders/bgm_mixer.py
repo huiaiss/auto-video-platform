@@ -1,363 +1,267 @@
-"""BGM Mixer — multi-track background music pre-mixing via ffmpeg.
+#!/usr/bin/env python
+"""BGM Mixer — Ducking 混音引擎
 
-Supports multiple BGM tracks with independent start times, durations, and volumes.
-Pre-mixes everything into a single audio file so the browser only handles one <audio> tag.
+使用 ffmpeg sidechaincompress 实现口播时 BGM 自动降低 (ducking)。
+当口播开始时，BGM 音量在 3ms 内降低 6-8dB；口播结束后 50ms 平滑恢复。
 
 Usage:
-    from builders.bgm_mixer import BGMMixer
-    mixer = BGMMixer(bgm_dir="bgm_library")
-    output = mixer.mix([
-        {"src": "cyber_intro.mp3", "start": 0, "end": 8, "volume": 0.3},
-        {"src": "tense_beat.mp3", "start": 8, "end": 30, "volume": 0.2},
-    ], total_duration_s=37, output_path="output/bgm_mixed.mp3")
-
-BGM Library:
-    bgm_library/
-    ├── cyber_intro.mp3     赛博朋克开场 — 短促有力，适合前3秒钩子
-    ├── tense_beat.mp3       悬疑律动 — 持续低音，适合分析/放大环节
-    ├── tech_explain.mp3     科技讲解 — 轻电子，适合原理/数据卡片
-    ├── reveal_punch.mp3     揭示重音 — 节奏重拍，适合破绽标注瞬间
-    └── outro_rise.mp3       结尾上扬 — 渐强收尾，适合CTA/关注引导
+    mixer = BGMMixer()
+    result = mixer.mix(
+        video_path="output/stage3/_texted.mp4",
+        narration_path="output/stage3/narration.mp3",
+        bgm_path="assets/bgm/corporate_tech.mp3",
+        output_path="output/stage3/_with_bgm.mp4",
+        total_duration_s=34.0,
+    )
 """
 
-import os, subprocess, shutil
-from dataclasses import dataclass, field
-from pathlib import Path
-from typing import Optional
+import os, subprocess, json, tempfile
 
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-# ─── BGM Track Definition ───────────────────────────────────
-
-@dataclass
-class BGMTrack:
-    """A single BGM segment with timeline placement."""
-    src: str              # File path or BGM library name
-    start: float = 0.0    # Timeline start (seconds)
-    end: float = 0.0      # Timeline end (seconds)
-    volume: float = 0.25  # 0.0–1.0
-
-    @property
-    def duration(self) -> float:
-        return max(0, self.end - self.start)
-
-
-# ─── Curated BGM Presets ─────────────────────────────────────
-
-# Emotion → BGM mapping: each beat gets its own track based on emotion.
-# Like a real editor: hook gets a stinger, reveal gets a hit, analysis gets a loop.
-EMOTION_BGM_MAP: dict[str, str] = {
-    "hook":      "stinger_hit",     # 开场钩子 — 短促冲击
-    "surprise":  "reveal_hit",      # 破绽揭示 — 重音强调
-    "curiosity": "tense_loop",      # 悬念/分析 — 持续低音
-    "trust":     "ambient_pad",     # 原理讲解 — 轻电子底
-    "desire":    "tense_loop",      # 引导 — 同悬念
-    "action":    "energy_beat",     # CTA / 收藏转发 — 节奏上扬
-    "default":   "ambient_pad",     # 兜底
-}
-
-# Legacy — kept for backward compatibility
-AI_FLAW_DETECT_PRESET: list[dict] = [
-    {"name": "cyber_intro",   "start": 0,  "end_rel": "hook_end", "volume": 0.30},
-    {"name": "tense_beat",    "start": "hook_end", "end_rel": "checklist_start", "volume": 0.22},
-    {"name": "outro_rise",    "start": "checklist_start", "end_rel": "end", "volume": 0.30},
-]
-
-
-# ─── Mixer ───────────────────────────────────────────────────
 
 class BGMMixer:
-    """Pre-mixes multiple BGM tracks into a single audio file using ffmpeg."""
+    """Sidechain Compression 混音器 — 口播时 BGM 自动 ducking。"""
 
-    def __init__(self, bgm_dir: str = None):
-        self.bgm_dir = Path(bgm_dir) if bgm_dir else Path(__file__).parent.parent / "bgm_library"
+    # 默认 EQ 曲线：削减 BGM 低频/中低频，让人声更清晰
+    DEFAULT_EQ = (
+        "equalizer=f=120:t=q:w=1:g=-4,"  # 减 120Hz 隆隆声
+        "equalizer=f=400:t=q:w=1:g=-3,"  # 减 400Hz 浑浊
+        "equalizer=f=2000:t=q:w=1:g=-2," # 微减 2kHz
+        "equalizer=f=8000:t=q:w=0.5:g=-1" # 微减 8kHz
+    )
 
-    def mix(self, tracks: list[dict], total_duration_s: float,
-            output_path: str = None) -> str:
-        """Mix multiple BGM tracks into one audio file.
+    def __init__(self, threshold=0.25, ratio=4, attack=3, release=60, makeup=1):
+        """
+        Args:
+            threshold: sidechain 触发阈值 (0.0-1.0)，口播超过此值则触发 ducking
+            ratio: 压缩比 (4:1 ≈ 降低 6-8dB)
+            attack: 压缩启动时间 (ms)，越小响应越快
+            release: 压缩释放时间 (ms)，越大恢复越平滑
+            makeup: 补偿增益 (dB)，压缩后整体音量提升
+        """
+        self.threshold = threshold
+        self.ratio = ratio
+        self.attack = attack
+        self.release = release
+        self.makeup = makeup
+
+    def mix(self, video_path, narration_path, bgm_path, output_path,
+            total_duration_s=None, bgm_volume=0.15, voice_volume=1.0,
+            bgm_eq=True):
+        """执行 ducking 混音。
 
         Args:
-            tracks: list of {"src", "start", "end", "volume"} dicts
-            total_duration_s: total video duration (truncates output)
-            output_path: destination .mp3 path
+            video_path: 带画面的视频文件（无需音频，或音频将被替换）
+            narration_path: 口播音频文件 (WAV/MP3)
+            bgm_path: BGM 音频文件
+            output_path: 输出 MP4 路径
+            total_duration_s: 视频总时长 (s)，用于 fade out
+            bgm_volume: BGM 基础音量 (0-1)
+            voice_volume: 口播音量 (0-1)
+            bgm_eq: 是否应用 BGM EQ 削减
 
         Returns:
-            Path to mixed MP3 file
+            dict: {success: bool, output_path: str, error: str|None}
         """
-        if not tracks:
-            return ""
+        # 参数校验
+        for p in [video_path, narration_path, bgm_path]:
+            if not os.path.exists(p):
+                return {"success": False, "output_path": None,
+                        "error": f"File not found: {p}"}
 
-        output = Path(output_path) if output_path else Path("bgm_mixed.mp3")
-        output.parent.mkdir(parents=True, exist_ok=True)
+        # 获取视频时长作为 fade out 参考
+        if total_duration_s is None:
+            total_duration_s = self._ffprobe_duration(video_path)
 
-        # Resolve source files (check bgm_dir first, then as absolute path)
-        resolved_tracks = []
-        for t in tracks:
-            src = self._resolve_src(t["src"])
-            if not src:
-                print(f"  [BGM] WARNING: source not found: {t['src']}")
-                continue
-            resolved_tracks.append({
-                "src": src,
-                "start": float(t.get("start", 0)),
-                "end": float(t.get("end", total_duration_s)),
-                "volume": float(t.get("volume", 0.25)),
-            })
+        # ==== 构建 FFmpeg filter graph ====
+        # 输入：
+        #   0:v — 视频流
+        #   1:a — BGM
+        #   2:a — 口播 (narration)
+        #
+        # 信号链：
+        #   [2:a] volume + loudnorm → voice
+        #   [1:a] volume + EQ + fade → bgm
+        #   [bgm][voice] sidechaincompress → bgm_ducked
+        #   [bgm_ducked][voice] amix → [a] 最终音频
 
-        if not resolved_tracks:
-            print("  [BGM] No valid tracks to mix")
-            return ""
+        # === 构建 FFmpeg filter graph ===
+        # 输入索引：
+        #   0:v — 视频 (输入文件1: _texted.mp4, 可能无音频)
+        #   1:a — BGM (输入文件2: bgm.mp3)
+        #   2:a — 口播 (输入文件3: narration.mp3)
+        #
+        # 关键：口播 [voice] 需要 asplit=2 分成两路，
+        #       一路给 sidechaincompress 做控制信号，
+        #       另一路给最终 amix
 
-        # Single track — just trim + adjust volume, no mixing needed
-        if len(resolved_tracks) == 1:
-            return self._process_single(resolved_tracks[0], total_duration_s, str(output))
+        # Pad narration to match video duration (avoid truncation)
+        pad_dur = total_duration_s + 2  # +2s safety margin
+        voice_chain = "[2:a]volume=1.0"
+        voice_chain += ",aresample=48000:async=1:first_pts=0"  # 统一采样率，复位 PTS
+        voice_chain += f",apad=whole_dur={pad_dur}"  # 补齐到视频长度
+        voice_chain += "[voice]"
 
-        # Multi-track — use ffmpeg filter_complex
-        return self._process_multi(resolved_tracks, total_duration_s, str(output))
+        bgm_chain = f"[1:a]volume={bgm_volume}"
+        if bgm_eq:
+            bgm_chain += f",aresample=48000,{self.DEFAULT_EQ}"
+        else:
+            bgm_chain += ",aresample=48000"
+        fade_start = max(total_duration_s - 2, 0)
+        bgm_chain += f",afade=t=out:st={fade_start}:d=2[bgm]"
 
-    def _resolve_src(self, src: str) -> Optional[str]:
-        """Resolve BGM source: check bgm_dir first, then as-is."""
-        # Check in bgm_library
-        candidate = self.bgm_dir / src
-        if candidate.exists():
-            return str(candidate)
-        # Check with .mp3 extension
-        if not src.endswith(".mp3"):
-            candidate = self.bgm_dir / f"{src}.mp3"
-            if candidate.exists():
-                return str(candidate)
-        # Check as absolute/relative path
-        if os.path.exists(src):
-            return src
-        return None
+        # asplit: voice → [voice_sc] (for sidechain) + [voice_mix] (for final mix)
+        split_chain = "[voice]asplit=2[voice_sc][voice_mix]"
 
-    def _process_single(self, track: dict, total_dur: float, output: str) -> str:
-        """Process a single BGM track: trim + volume."""
-        dur = min(track["end"] - track["start"], total_dur - track["start"])
-        if dur <= 0:
-            return ""
-
-        cmd = [
-            "ffmpeg", "-y", "-v", "error",
-            "-i", track["src"],
-            "-af", f"atrim={track['start']}:{track['start']+dur},"
-                   f"volume={track['volume']},"
-                   f"afade=t=out:st={dur-1.5}:d=1.5",
-            "-t", str(total_dur),
-            output,
-        ]
-        try:
-            subprocess.run(cmd, check=True, capture_output=True, timeout=30)
-            return output
-        except subprocess.CalledProcessError as e:
-            print(f"  [BGM] Single-track mix failed: {e.stderr.decode()[:200] if e.stderr else e}")
-            return ""
-
-    def _process_multi(self, tracks: list[dict], total_dur: float, output: str) -> str:
-        """Mix multiple BGM tracks with ffmpeg filter_complex."""
-        # Build filter graph
-        inputs = []
-        filter_parts = []
-        labels = []
-
-        for i, t in enumerate(tracks):
-            dur = min(t["end"] - t["start"], total_dur - t["start"])
-            if dur <= 0:
-                continue
-
-            inputs.extend(["-i", t["src"]])
-            label = f"a{i}"
-            labels.append(label)
-
-            delay_ms = int(t["start"] * 1000)
-            fade_out_start = max(0, dur - 1.5)
-
-            filter_parts.append(
-                f"[{i}:a]atrim=0:{dur},"
-                f"adelay={delay_ms}|{delay_ms},"
-                f"volume={t['volume']},"
-                f"afade=t=out:st={fade_out_start}:d=1.5"
-                f"[{label}]"
-            )
-
-        if not labels:
-            return ""
-
-        mix_inputs = "".join(f"[{l}]" for l in labels)
-        filter_parts.append(
-            f"{mix_inputs}amix=inputs={len(labels)}:duration=first:dropout_transition=0[out]"
+        # sidechaincompress: BGM 被口播压缩
+        sc_params = (
+            f"threshold={self.threshold}:"
+            f"ratio={self.ratio}:"
+            f"attack={self.attack}:"
+            f"release={self.release}:"
+            f"makeup={self.makeup}"
         )
+        sc_chain = f"[bgm][voice_sc]sidechaincompress={sc_params}[bgm_ducked]"
 
-        filter_graph = ";".join(filter_parts)
+        # 最终混合：压缩后的 BGM + 原始口播
+        mix_chain = "[bgm_ducked][voice_mix]amix=inputs=2:duration=first:dropout_transition=2[a]"
 
+        filter_complex = ";".join([
+            voice_chain, bgm_chain, split_chain, sc_chain, mix_chain
+        ])
+
+        # ==== 执行 FFmpeg ====
         cmd = [
-            "ffmpeg", "-y", "-v", "error",
-            *inputs,
-            "-filter_complex", filter_graph,
-            "-map", "[out]",
-            "-t", str(total_dur),
-            output,
+            "ffmpeg", "-y",
+            "-i", video_path,
+            "-i", bgm_path,
+            "-i", narration_path,
+            "-c:v", "libx264", "-preset", "fast", "-crf", "20",
+            "-pix_fmt", "yuv420p", "-profile:v", "main",
+            "-colorspace", "bt709",
+            "-c:a", "aac", "-b:a", "128k",
+            "-map", "0:v:0",
+            "-filter_complex", filter_complex,
+            "-map", "[a]",
+            "-t", str(total_duration_s),
+            output_path,
         ]
 
         try:
-            subprocess.run(cmd, check=True, capture_output=True, timeout=60)
-            print(f"  [BGM] Mixed {len(labels)} tracks → {output}")
-            return output
-        except subprocess.CalledProcessError as e:
-            print(f"  [BGM] Multi-track mix failed: {e.stderr.decode()[:200] if e.stderr else e}")
-            return ""
+            r = subprocess.run(
+                cmd, capture_output=True, text=True,
+                encoding="utf-8", errors="replace",
+                timeout=600
+            )
+            if r.returncode != 0:
+                err = r.stderr[-500:] if r.stderr else "Unknown error"
+                return {"success": False, "output_path": None, "error": err}
 
-    def build_preset(self, preset: list[dict], beat_times: dict,
-                     total_duration_s: float) -> list[dict]:
-        """Expand a preset template with actual beat timing values.
+            if not os.path.exists(output_path):
+                return {"success": False, "output_path": None,
+                        "error": "Output not created"}
+
+            return {
+                "success": True,
+                "output_path": output_path,
+                "size_mb": os.path.getsize(output_path) / 1024 / 1024,
+                "error": None,
+            }
+
+        except subprocess.TimeoutExpired:
+            return {"success": False, "output_path": None,
+                    "error": "FFmpeg timeout (600s)"}
+        except Exception as e:
+            return {"success": False, "output_path": None,
+                    "error": str(e)}
+
+    def mix_preview(self, narration_path, bgm_path, output_path,
+                    total_duration_s=10, bgm_volume=0.15):
+        """快速生成 10 秒混音 demo（只有音频，用于验证 ducking 效果）。
 
         Args:
-            preset: template list with "end_rel" keys referencing beat names
-            beat_times: {"hook_end": 3.0, "checklist_start": 21.0, "end": 37.0}
-            total_duration_s: total video time
-
-        Returns:
-            List of resolved {"src", "start", "end", "volume"} dicts
+            narration_path: 口播音频
+            bgm_path: BGM 文件
+            output_path: 输出音频路径 (.mp3/.m4a)
+            total_duration_s: 混音时长 (s)
+            bgm_volume: BGM 基础音量
         """
-        resolved = []
-        for t in preset:
-            start = t["start"]
-            if isinstance(start, str):
-                start = beat_times.get(start, 0)
-            end = t["end_rel"]
-            if isinstance(end, str):
-                end = beat_times.get(end, total_duration_s)
+        filters = [
+            f"[1:a]volume={bgm_volume},aresample=48000,afade=t=out:st={total_duration_s-1}:d=1[bgm]",
+            f"[2:a]volume=1.0,aresample=48000:async=1:first_pts=0[voice]",
+            "[voice]asplit=2[voice_sc][voice_mix]",
+            f"[bgm][voice_sc]sidechaincompress="
+            f"threshold={self.threshold}:ratio={self.ratio}:"
+            f"attack={self.attack}:release={self.release}:makeup={self.makeup}[bgm_d]",
+            "[bgm_d][voice_mix]amix=inputs=2:duration=first:dropout_transition=2[a]",
+        ]
 
-            resolved.append({
-                "src": t["name"],
-                "start": float(start),
-                "end": float(end),
-                "volume": float(t.get("volume", 0.25)),
-            })
-        return resolved
+        cmd = [
+            "ffmpeg", "-y",
+            "-f", "lavfi", "-i", f"anullsrc=r=48000:cl=stereo",
+            "-i", bgm_path,
+            "-i", narration_path,
+            "-filter_complex", ";".join(filters),
+            "-map", "[a]",
+            "-t", str(total_duration_s),
+            "-c:a", "aac", "-b:a", "128k",
+            output_path,
+        ]
+
+        r = subprocess.run(cmd, capture_output=True, text=True,
+                           encoding="utf-8", errors="replace", timeout=120)
+        return r.returncode == 0
 
     @staticmethod
-    def build_beat_tracks(script, total_duration_s: float) -> list[dict]:
-        """Build per-beat BGM tracks — like a real editor placing clips on a timeline.
-
-        Each beat gets its own BGM clip based on its emotion.
-        Adjacent beats with the same BGM are merged into one continuous segment.
-        Cross-fade gaps (0.3s) are inserted between different BGM segments.
-
-        Returns:
-            List of {"src", "start", "end", "volume"} dicts, one per beat group.
-        """
-        # Calculate beat start times
-        beat_starts = {}
-        t = 0.0
-        for b in script.beats:
-            beat_starts[b.index] = t
-            t += b.duration_s
-        outro_start = t
-        outro_end = outro_start + script.outro.duration_s
-
-        # Assign BGM to each beat by emotion
-        beat_bgm = []
-        for b in script.beats:
-            bgm_name = EMOTION_BGM_MAP.get(b.emotion, EMOTION_BGM_MAP["default"])
-            beat_bgm.append({
-                "beat_idx": b.index,
-                "bgm": bgm_name,
-                "start": beat_starts[b.index],
-                "end": beat_starts[b.index] + b.duration_s,
-                "emotion": b.emotion,
-            })
-
-        # Outro always gets energy_beat or outro_rise
-        outro_bgm = "energy_beat" if script.outro.emotion in ("action",) else "ambient_pad"
-        beat_bgm.append({
-            "beat_idx": "outro",
-            "bgm": outro_bgm,
-            "start": outro_start,
-            "end": outro_end,
-            "emotion": script.outro.emotion,
-        })
-
-        # Merge adjacent beats that use the same BGM
-        merged = []
-        for bgm in beat_bgm:
-            if merged and merged[-1]["bgm"] == bgm["bgm"]:
-                # Extend the previous segment
-                merged[-1]["end"] = bgm["end"]
-            else:
-                merged.append(dict(bgm))
-
-        # Convert to track dicts with volume
-        # Hook gets louder, analysis gets quieter, action gets medium
-        vol_map = {"hook": 0.30, "surprise": 0.28, "curiosity": 0.20,
-                   "trust": 0.18, "action": 0.25, "default": 0.20}
-
-        tracks = []
-        for m in merged:
-            vol = vol_map.get(m["emotion"], 0.20)
-            tracks.append({
-                "src": m["bgm"],
-                "start": m["start"],
-                "end": m["end"],
-                "volume": vol,
-            })
-
-        return tracks
+    def _ffprobe_duration(path):
+        """用 ffprobe 获取文件时长 (s)。"""
+        r = subprocess.run(
+            ["ffprobe", "-v", "error", "-show_entries",
+             "format=duration", "-of", "csv=p=0", path],
+            capture_output=True, text=True, timeout=30
+        )
+        try:
+            return float(r.stdout.strip())
+        except (ValueError, TypeError):
+            return 30.0
 
 
-# ─── BGM Library Bootstrap ───────────────────────────────────
+# ===== 快速验证 =====
+if __name__ == "__main__":
+    import sys, tempfile
 
-def bootstrap_bgm_library(bgm_dir: str = None) -> Path:
-    """Create bgm_library/ directory with README and download instructions.
+    # 找最新一次 pipeline 产出的文件
+    s3 = os.path.join(ROOT, "output", "stage3")
+    narration = os.path.join(s3, "narration.mp3")
+    bgm = os.path.join(ROOT, "assets", "bgm", "corporate_tech.mp3")
 
-    The actual .mp3 files need to be sourced by the user (copyright).
-    This creates a structured directory with recommendations.
-    """
-    import json
+    if not os.path.exists(narration) or not os.path.exists(bgm):
+        print("Need: narration.mp3 and corporate_tech.mp3")
+        sys.exit(1)
 
-    root = Path(bgm_dir) if bgm_dir else Path(__file__).parent.parent / "bgm_library"
-    root.mkdir(parents=True, exist_ok=True)
+    # 生成 10 秒 ducking demo（纯音频）
+    demo_path = os.path.join(s3, "_ducking_demo.mp3")
+    mixer = BGMMixer(threshold=0.25, ratio=4, attack=3, release=60)
 
-    readme = root / "README.md"
-    readme.write_text("""# BGM Library — AI照妖镜
+    print("=" * 60)
+    print("Ducking 混音验证 — 10s demo")
+    print("=" * 60)
+    print(f"  阈值: {mixer.threshold}")
+    print(f"  压缩比: {mixer.ratio}:1")
+    print(f"  Attack: {mixer.attack}ms | Release: {mixer.release}ms")
+    print(f"  BGM: {bgm}")
+    print(f"  口播: {narration}")
+    print()
 
-## 目录结构
-每段视频按节奏分3段BGM:
-
-```
-bgm_library/
-├── cyber_intro.mp3      # 赛博朋克开场 — 短促有力，前3秒钩子
-├── tense_beat.mp3        # 悬疑律动 — 持续低音，分析/放大环节
-├── tech_explain.mp3      # 科技讲解 — 轻电子，原理/数据卡片
-├── reveal_punch.mp3      # 揭示重音 — 节奏重拍，破绽标注
-└── outro_rise.mp3        # 结尾上扬 — 渐强收尾，CTA引导
-```
-
-## 如何获取BGM
-
-### 方法1: 抖音热门BGM提取
-1. 打开抖音, 搜索"科技科普"类视频
-2. 点击右下角"音乐"图标查看BGM名称
-3. 在网易云音乐/QQ音乐搜索同名BGM
-4. 下载后放入本目录, 按上方命名规则重命名
-
-### 方法2: 免费商用BGM网站
-- **Pixabay Music** (https://pixabay.com/music/) — 搜索 cyberpunk/electronic/tense
-- **YouTube Audio Library** — 搜索 "tech" "suspense" "electronic"
-- **Freesound** (https://freesound.org/) — 搜索 "cyberpunk" "glitch" "beat"
-
-### 方法3: AI生成BGM
-- **Suno AI** (https://suno.ai) — 输入 "赛博朋克风格电子音乐, 30秒, 适合科技科普视频"
-- **AIVA** (https://aiva.ai) — AI作曲, 可选风格模板
-
-## BGM推荐(抖音科技类同款风格)
-| 风格 | 参考BGM名 | 适用场景 |
-|------|-----------|----------|
-| 赛博朋克 | Cyberpunk 2077 OST 风格 | 开场钩子 |
-| 悬疑电子 | Stranger Things 风格合成器 | 分析破绽 |
-| 轻科技 | Blade Runner 风格环境音 | 原理讲解 |
-| 重拍提示 | 鼓点+贝斯 | 破绽标注 |
-""", encoding="utf-8")
-
-    print(f"  [BGM] Library bootstrapped at: {root}")
-    print(f"  [BGM] Next: download 3-5 .mp3 files into {root}/")
-    return root
+    ok = mixer.mix_preview(narration, bgm, demo_path, total_duration_s=10)
+    if ok:
+        print(f"  ✅ Demo: {demo_path}")
+        print(f"     大小: {os.path.getsize(demo_path)//1024}KB")
+        print()
+        print("  👂 请用耳机听 _ducking_demo.mp3 验证：")
+        print("     口播开始时 BGM 应自动降低 6-8dB")
+        print("     口播结束后 BGM 应平滑恢复")
+        print()
+    else:
+        print("  ❌ Demo FAILED")

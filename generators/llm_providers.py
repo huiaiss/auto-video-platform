@@ -93,6 +93,7 @@ class BaseLLMProvider(ABC):
         self.base_url = config["base_url"].rstrip("/")
         self.models = config.get("models", [])
         self.default_model = config.get("default_model", self.models[0] if self.models else "")
+        self.supports_vision = config.get("supports_vision", False)
         self._available_cache = None
 
     @abstractmethod
@@ -242,11 +243,27 @@ class MoonshotProvider(BaseLLMProvider):
 
 # ─── Provider Registry ─────────────────────────────────────
 
+class DoubaoProvider(BaseLLMProvider):
+    """Doubao via Volcengine Ark (OpenAI-compatible, supports vision)."""
+
+    def _get_api_key(self):
+        return os.environ.get("SEEDREAM_API_KEY") or os.environ.get(self.config.get("api_key_env", ""))
+
+    def _call_api(self, messages, model, temperature, max_tokens, timeout_s):
+        return self._build_request("/chat/completions", {
+            "model": model,
+            "messages": messages,
+            "temperature": temperature,
+            "max_tokens": max_tokens,
+        }, timeout_s)
+
+
 PROVIDER_CLASSES = {
     "deepseek": DeepSeekProvider,
     "qwen": QwenProvider,
     "ollama": OllamaProvider,
     "moonshot": MoonshotProvider,
+    "doubao": DoubaoProvider,
 }
 
 
@@ -305,7 +322,21 @@ class LLMDispatcher:
         last_error = ""
         attempts = 0
 
-        for provider in self._providers:
+        # Check if messages contain image content
+        has_vision_content = any(
+            isinstance(m.get("content"), list) and 
+            any(item.get("type") == "image_url" for item in m.get("content", []))
+            for m in messages
+        )
+        # Filter providers: if vision content, skip text-only providers
+        if has_vision_content:
+            providers_to_try = [p for p in self._providers if p.supports_vision]
+            if not providers_to_try:
+                raise RuntimeError("Vision content detected but no vision-capable provider available")
+        else:
+            providers_to_try = self._providers
+
+        for provider in providers_to_try:
             if not provider.is_available():
                 self._statuses[provider.name] = ProviderStatus(
                     name=provider.name, display_name=provider.display_name,

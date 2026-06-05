@@ -21,3 +21,6 @@ output/
 workspace/
 bgm_library/*.mp3
 *.log
+
+# Claude Code local settings (personal overrides, not for sharing)
+.claude/settings.local.json

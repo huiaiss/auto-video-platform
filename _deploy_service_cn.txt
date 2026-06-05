@@ -1,0 +1,17 @@
+<div class="section"><div class="section-inner" style="max-width:800px">
+<div class="section-header"><div class="section-label">🔧 SERVICE</div>
+<h2 class="section-title">服务承诺</h2>
+<p class="section-sub">从咨询到售后，全程无忧</p></div>
+<div style="display:grid;gap:16px;">
+<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;display:flex;gap:16px;align-items:flex-start;">
+<div style="font-size:32px;flex-shrink:0;">📋</div>
+<div><h3 style="font-size:16px;font-weight:700;margin-bottom:6px;">免费打样</h3><p style="color:var(--text-secondary);font-size:14px;">提供免费样机打样服务，样品测试满意后再下单</p></div></div>
+<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;display:flex;gap:16px;align-items:flex-start;">
+<div style="font-size:32px;flex-shrink:0;">🚚</div>
+<div><h3 style="font-size:16px;font-weight:700;margin-bottom:6px;">上门安装调试</h3><p style="color:var(--text-secondary);font-size:14px;">工程师上门安装调试，培训操作人员直到熟练使用</p></div></div>
+<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;display:flex;gap:16px;align-items:flex-start;">
+<div style="font-size:32px;flex-shrink:0;">🔧</div>
+<div><h3 style="font-size:16px;font-weight:700;margin-bottom:6px;">售后保障</h3><p style="color:var(--text-secondary);font-size:14px;">整机质保1年，终身维修服务</p></div></div>
+<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;display:flex;gap:16px;align-items:flex-start;">
+<div style="font-size:32px;flex-shrink:0;">⚙</div>
+<div><h3 style="font-size:16px;font-weight:700;margin-bottom:6px;">非标定制</h3><p style="color:var(--text-secondary);font-size:14px;">可根据客户需求定制特殊规格设备</p></div></div></div></div>

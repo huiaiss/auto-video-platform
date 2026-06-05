@@ -3,14 +3,16 @@
   "temperature": 0.8,
   "max_tokens": 4096,
   "timeout_s": 120,
-
   "providers": [
     {
       "name": "deepseek",
       "display_name": "DeepSeek",
       "base_url": "https://api.deepseek.com",
       "api_key_env": "DEEPSEEK_API_KEY",
-      "models": ["deepseek-chat", "deepseek-reasoner"],
+      "models": [
+        "deepseek-chat",
+        "deepseek-reasoner"
+      ],
       "default_model": "deepseek-chat",
       "priority": 1,
       "enabled": true
@@ -20,7 +22,11 @@
       "display_name": "Qwen (DashScope)",
       "base_url": "https://dashscope.aliyuncs.com/compatible-mode/v1",
       "api_key_env": "DASHSCOPE_API_KEY",
-      "models": ["qwen-plus", "qwen-max", "qwen-turbo"],
+      "models": [
+        "qwen-plus",
+        "qwen-max",
+        "qwen-turbo"
+      ],
       "default_model": "qwen-plus",
       "priority": 2,
       "enabled": true
@@ -30,7 +36,11 @@
       "display_name": "Ollama (Local)",
       "base_url": "http://localhost:11434/v1",
       "api_key_env": null,
-      "models": ["qwen3", "llama3", "mistral"],
+      "models": [
+        "qwen3",
+        "llama3",
+        "mistral"
+      ],
       "default_model": "qwen3",
       "priority": 3,
       "enabled": false
@@ -40,13 +50,54 @@
       "display_name": "Moonshot (Kimi)",
       "base_url": "https://api.moonshot.cn/v1",
       "api_key_env": "MOONSHOT_API_KEY",
-      "models": ["moonshot-v1-8k", "moonshot-v1-32k", "moonshot-v1-128k"],
+      "models": [
+        "moonshot-v1-8k",
+        "moonshot-v1-32k",
+        "moonshot-v1-128k"
+      ],
       "default_model": "moonshot-v1-8k",
       "priority": 4,
       "enabled": false
+    },
+    {
+      "name": "hunyuan",
+      "display_name": "腾讯混元",
+      "base_url": "http://localhost:8789/v1",
+      "api_key_env": null,
+      "models": [
+        "hunyuan-turbo",
+        "hunyuan-pro",
+        "hunyuan-standard",
+        "hunyuan-lite"
+      ],
+      "default_model": "hunyuan-pro",
+      "priority": 5,
+      "enabled": true
+    },
+    {
+      "name": "doubao",
+      "display_name": "豆包 (Volcengine Ark)",
+      "base_url": "https://ark.cn-beijing.volces.com/api/v3",
+      "api_key_env": "SEEDREAM_API_KEY",
+      "models": [
+        "doubao-1-5-thinking-vision-pro-250428",
+        "doubao-seed-1-6-vision-250815",
+        "doubao-1-5-vision-pro-32k-250115",
+        "doubao-1.5-vision-pro-250328",
+        "doubao-1.5-vision-lite-250315",
+        "doubao-vision-pro-32k-241028",
+        "doubao-seed-1-6-250615",
+        "doubao-seed-1-6-thinking-250615",
+        "doubao-1-5-pro-32k-250115",
+        "doubao-seedance-2-0-260128",
+        "doubao-seedream-5-0-260128"
+      ],
+      "default_model": "doubao-seed-1-6-250615",
+      "priority": 1,
+      "enabled": true,
+      "supports_vision": true
     }
   ],
-
   "fallback_strategy": "sequential",
   "retry_count": 1
 }

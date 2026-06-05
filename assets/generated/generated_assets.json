@@ -1,0 +1,12 @@
+{
+  "tech_bg": [
+    "assets/generated\\tech_bg_00001_.png",
+    "assets/generated\\tech_bg_00002_.png"
+  ],
+  "hud_overlay": [
+    "assets/generated\\hud_overlay_00001_.png"
+  ],
+  "particles": [
+    "assets/generated\\particles_00001_.png"
+  ]
+}

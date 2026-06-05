@@ -172,76 +172,77 @@ class EdgeTTSProvider(BaseTTSProvider):
 # ─── CosyVoice Provider ────────────────────────────────────
 
 class CosyVoiceProvider(BaseTTSProvider):
-    """Alibaba CosyVoice — word-level timestamps, excellent Chinese quality.
+    """Alibaba Cloud CosyVoice via DashScope cloud API.
 
-    Requires local installation:
-        pip install cosyvoice
-        python -m cosyvoice.download
+    Uses the DashScope cloud API for TTS, no local model needed.
     """
 
     def is_available(self) -> bool:
+        key = os.environ.get("DASHSCOPE_API_KEY", "")
+        if not key:
+            return False
         try:
-            import cosyvoice
+            import dashscope
             return True
         except ImportError:
             return False
 
     def synthesize(self, text: str, voice: str = None,
                    speed: float = 1.0, output_dir: str = None) -> TTSResult:
-        try:
-            from cosyvoice.cli.cosyvoice import CosyVoice
-        except ImportError:
-            raise RuntimeError(
-                "CosyVoice not installed. Run: pip install cosyvoice && python -m cosyvoice.download"
-            )
+        import dashscope
+        from dashscope.client.base_api import BaseApi
+        from dashscope.common.constants import ApiProtocol
+        from dashscope.common.utils import _get_task_group_and_task
 
-        out_dir = Path(output_dir or tempfile.mkdtemp(prefix="tts_"))
+        api_key = os.environ.get("DASHSCOPE_API_KEY", "")
+        if not api_key:
+            raise RuntimeError("DASHSCOPE_API_KEY not set")
+        dashscope.api_key = api_key
+
+        out_dir = Path(output_dir or tempfile.mkdtemp(prefix="cosy_"))
         out_dir.mkdir(parents=True, exist_ok=True)
-        out_path = out_dir / "output.wav"
+        out_path = out_dir / "output.mp3"
 
-        model_name = self.config.get("default_model", "cosyvoice-300m-sft")
+        used_voice = voice or self.config.get("default_voice", "longxiaochun")
+        used_speed = speed if speed > 0 else 1.0
 
-        # CosyVoice inference with word timestamps
-        cosyvoice = CosyVoice(model_name)
-        result = cosyvoice.inference(
-            text=text,
-            stream=False,
-            speed=1.0 / speed if speed > 0 else 1.0,
+        task_name, _ = _get_task_group_and_task("dashscope.audio.tts.speech_synthesizer")
+
+        response = BaseApi.call(
+            model="cosyvoice-v1",
+            task_group="audio",
+            task=task_name,
+            function="SpeechSynthesizer",
+            input={"text": text},
+            stream=True,
+            api_protocol=ApiProtocol.WEBSOCKET,
+            format="mp3",
+            voice=used_voice,
+            rate=used_speed,
         )
 
-        # Save audio
-        import soundfile as sf
-        sf.write(str(out_path), result['audio'], result['sample_rate'])
+        audio_data = None
+        for part in response:
+            if isinstance(part.output, bytes):
+                if audio_data is None:
+                    audio_data = bytes(part.output)
+                else:
+                    audio_data = audio_data + bytes(part.output)
 
-        # Convert to MP3 for compatibility
-        mp3_path = out_dir / "output.mp3"
-        subprocess.run([
-            "ffmpeg", "-y", "-v", "error",
-            "-i", str(out_path), "-c:a", "libmp3lame", "-b:a", "128k",
-            str(mp3_path),
-        ], check=True)
+        if not audio_data:
+            raise RuntimeError("CosyVoice: no audio data received")
 
-        # Extract word timestamps
-        word_timestamps = []
-        if hasattr(result, 'word_timestamps') and result['word_timestamps']:
-            for wt in result['word_timestamps']:
-                word_timestamps.append(WordTimestamp(
-                    word=wt.get('word', ''),
-                    start_s=wt.get('start', 0.0),
-                    end_s=wt.get('end', 0.0),
-                ))
+        with open(out_path, "wb") as f:
+            f.write(audio_data)
 
-        duration = _get_audio_duration(str(mp3_path))
+        duration = _get_audio_duration(str(out_path))
         return TTSResult(
-            audio_path=str(mp3_path),
+            audio_path=str(out_path),
             duration_s=duration,
             provider="cosyvoice",
-            voice=model_name,
-            word_timestamps=word_timestamps or _estimate_word_timestamps(text, duration),
+            voice=used_voice,
+            word_timestamps=_estimate_word_timestamps(text, duration),
         )
-
-
-# ─── Coqui TTS Provider ────────────────────────────────────
 
 class CoquiTTSProvider(BaseTTSProvider):
     """Coqui TTS — open-source, offline, many models."""
@@ -344,11 +345,95 @@ class OpenAITTSProvider(BaseTTSProvider):
 
 # ─── Provider Registry ─────────────────────────────────────
 
+
+class VolcengineTTSProvider(BaseTTSProvider):
+    """旧版 Volcengine TTS — 已废弃，请使用 ArkTTSProvider（新版豆包语音合成2.0）。"""
+
+    def is_available(self) -> bool:
+        return False
+
+    def synthesize(self, text: str, voice: str = None,
+                   speed: float = 1.0, output_dir: str = None) -> TTSResult:
+        raise RuntimeError("VolcengineTTSProvider 已废弃，请使用 ArkTTSProvider（新版豆包语音合成2.0）")
+
+
+
+class ArkTTSProvider(BaseTTSProvider):
+    """豆包语音合成2.0 — 新版 API Key 鉴权。
+
+    架构: OpenAI 兼容请求 → 本地代理 (:8791) → Volcengine Speech API v3
+
+    配置:
+      1. 打开 https://console.volcengine.com/speech/api-key 创建 API Key
+      2. 填入 .env: VOLC_TTS_API_KEY
+      3. 启动代理: python generators/ark_tts_proxy.py
+    """
+
+    def is_available(self) -> bool:
+        # 检查 API Key 是否已配置
+        key = os.environ.get("VOLC_TTS_API_KEY", "")
+        if not key:
+            return False
+        # 检查本地代理
+        import socket
+        try:
+            s = socket.create_connection(("127.0.0.1", 8791), timeout=2)
+            s.close()
+            return True
+        except Exception:
+            return False
+
+    def synthesize(self, text: str, voice: str = None,
+                   speed: float = 1.0, output_dir: str = None) -> TTSResult:
+        import urllib.request, urllib.error
+
+        out_dir = Path(output_dir or tempfile.mkdtemp(prefix="tts_"))
+        out_dir.mkdir(parents=True, exist_ok=True)
+        out_path = out_dir / "output.mp3"
+
+        used_voice = voice or self.config.get("default_voice", "zh_female_2")
+        model = self.config.get("default_model", "volcano_tts")
+
+        data = json.dumps({
+            "model": model,
+            "input": text,
+            "voice": used_voice,
+            "speed": speed,
+            "response_format": "mp3",
+        }).encode("utf-8")
+
+        req = urllib.request.Request(
+            "http://127.0.0.1:8791/v1/audio/speech",
+            data=data,
+            headers={"Content-Type": "application/json"},
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=120) as resp:
+                out_path.write_bytes(resp.read())
+        except urllib.error.HTTPError as e:
+            body = e.read().decode()[:500] if e.fp else ""
+            raise RuntimeError(f"豆包语音合成代理 HTTP {e.code}: {body}")
+
+        if out_path.stat().st_size == 0:
+            raise RuntimeError("返回空文件")
+
+        duration = _get_audio_duration(str(out_path))
+        return TTSResult(
+            audio_path=str(out_path),
+            duration_s=duration,
+            provider="ark_tts",
+            voice=used_voice,
+            word_timestamps=_estimate_word_timestamps(text, duration),
+        )
+
+
 TTS_PROVIDER_CLASSES = {
     "edge_tts": EdgeTTSProvider,
     "cosyvoice": CosyVoiceProvider,
     "coqui_tts": CoquiTTSProvider,
     "openai_tts": OpenAITTSProvider,
+    "volcengine_tts": VolcengineTTSProvider,
+    "ark_tts": ArkTTSProvider,
 }
 
 

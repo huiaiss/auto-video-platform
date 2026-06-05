@@ -1,0 +1,27 @@
+# longjiang-ai.com — AI爬虫友好配置
+# 覆盖 Cloudflare Managed 规则，显式允许所有 AI 爬虫
+
+User-agent: *
+Allow: /
+
+# 显式允许 AI 爬虫（覆盖 Cloudflare Managed 限制）
+User-agent: GPTBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+# Sitemap 位置
+Sitemap: https://www.longjiang-ai.com/sitemap.xml
+
+# 爬取延迟（对友好爬虫的建议）
+Crawl-delay: 1

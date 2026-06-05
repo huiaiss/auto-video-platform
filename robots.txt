@@ -1,0 +1,11 @@
+# longjiang-ai.com — AI爬虫友好配置
+# 允许所有搜索引擎和AI爬虫抓取
+
+User-agent: *
+Allow: /
+
+# Sitemap 位置
+Sitemap: https://longjiang-ai.com/sitemap.xml
+
+# 爬取延迟（对友好爬虫的建议）
+Crawl-delay: 1

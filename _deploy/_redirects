@@ -1,0 +1,11 @@
+# Cloudflare Pages redirects
+# Language detection redirect (optional - handled by main site JS)
+# All routes work as-is with the file structure
+
+# Ensure trailing slash URLs work
+/products/  /products/index.html  200
+/en/products/  /en/products/index.html  200
+
+# Root
+/  /index.html  200
+/en/  /en/index.html  200

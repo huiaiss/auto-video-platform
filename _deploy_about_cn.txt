@@ -1,0 +1,18 @@
+<div class="section"><div class="section-inner" style="max-width:800px">
+<div class="section-header"><div class="section-label">🏭 ABOUT</div>
+<h2 class="section-title">让绕线更智能</h2>
+<p class="section-sub">台州隆江自动化设备有限公司 — 绕线机&amp;自动化设备源头工厂</p></div>
+<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:40px;margin-bottom:24px;">
+<p style="color:var(--text-secondary);line-height:1.8;margin-bottom:16px;">台州隆江自动化设备有限公司位于浙江省台州市椒江区，是一家集研发、设计、制造、销售与服务于一体的自动化设备制造企业。</p>
+<p style="color:var(--text-secondary);line-height:1.8;margin-bottom:16px;">公司拥有多年行业经验，核心产品覆盖绕线机系列（内绕、外绕、飞叉、分块）、磁钢机系列（插磁钢、点胶、表贴）、插纸机系列等多个品类，共计37款设备，广泛应用于无刷电机、汽车电机、家用电器电机等领域。</p>
+<p style="color:var(--text-secondary);line-height:1.8;">我们坚持"让绕线更智能"的理念，持续投入研发，为客户提供高性价比的自动化解决方案。所有设备源头工厂直供，支持非标定制，免费样机打样。</p></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;">
+<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;text-align:center;">
+<div style="font-size:36px;font-weight:800;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">37+</div>
+<div style="color:var(--text-secondary);font-size:14px;margin-top:4px;">设备型号</div></div>
+<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;text-align:center;">
+<div style="font-size:36px;font-weight:800;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">10+</div>
+<div style="color:var(--text-secondary);font-size:14px;margin-top:4px;">行业经验</div></div>
+<div style="background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;text-align:center;">
+<div style="font-size:36px;font-weight:800;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">100%</div>
+<div style="color:var(--text-secondary);font-size:14px;margin-top:4px;">源头工厂直供</div></div></div></div>

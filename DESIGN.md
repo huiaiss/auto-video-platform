@@ -1,10 +1,29 @@
-# Auto Video Platform — 通用AI短视频自动化剪辑平台
+# Auto Video Platform — 制造业实体商家的AI询盘工厂
+
+> Hermes 战略分析：2026-05-25 | 定位修正版 v2：2026-06-04
+> 
+> **定位变更：从"视频工厂"改为"询盘工厂"。**
+> 出视频是手段，不是目的。目的是客户收到询盘。
+> 数据支撑：追马网帮阀门厂 3 个月 800 条询盘，靠的不是视频质量，是"发布→被搜到→留资→跟进"整条链路。
 
 ## 项目定位
 
-一个**通用的、逆向分析驱动的、全链路AI短视频自动生产平台**。不是为某一个账号或行业定制，而是可配置、可复用、覆盖全行业的工业化视频生产工具。
+**不是"又一个剪映"，不是"通用AI视频工具"。**
 
-**一句话**：上传素材 → AI自动分析 → 生成方案 → 输出成品视频 + 多平台发布策略。把一条视频的制作成本从"1个人1天"降到"上传素材等10分钟"。
+**是：制造业实体商家的AI询盘工厂。** 目标客户是工厂老板、设备厂家、实体门店——他们手上有设备素材但不会做视频，更不会把视频变成询盘。本平台帮他们：上传素材 → AI自动分析机器亮点 → 生成专业宣传视频 → 四平台差异化发布 → GEO数据让AI搜索能搜到 → 落地页转化留资 → 客户收到询盘。
+
+**核心逻辑**："老板自己用了有效，他们就敢买。" —— 隆江绕线机是第一只验证品。
+
+**一句话**：给设备拍段视频 → AI看懂是什么机器、亮点在哪里 → 10分钟出宣传片。
+
+### 目标客户画像
+
+| 客户类型 | 典型需求 | 痛点 |
+|---------|---------|------|
+| **自动化设备厂**（数控机床、绕线机、注塑机） | 展示机器运行、精度、产能 | 机器在动，不知道拍哪个角度 |
+| **工厂/代工厂** | 展示产线规模、品控能力 | 想接外贸单，没有像样视频 |
+| **实体门店**（汽修、门窗、家具） | 展示手艺、设备、案例 | 只会用抖音拍15秒 |
+| **外贸/跨境电商** | 产品多角度展示+参数+证书 | 国外客户要视频，找人拍太贵 |
 
 ### 已覆盖的视频类型
 
@@ -48,6 +67,528 @@
 | 本地化 | 英文为主 | **中文全链路原生** — OCR/TTS/字幕/脚本 |
 
 ---
+
+---
+
+## 反同质化设计体系（核心架构决策）
+
+> ⚠️ 模板化 = 同质化 = 死路。这条必须刻在架构骨头上。
+
+### 设计原则
+
+```
+模板是骨架  → 决定视频的"功能正确"（开场→展开→收尾）
+Brand DNA   → 决定视频的"视觉身份"（配色/字体/Logo/转场风格）
+叙事引擎    → 决定视频的"内容角度"（8+种叙事视角智能选择）
+素材驱动    → 决定视频的"随机变异"（素材不同=决策不同=成品不同）
+```
+
+**骨架通用，血肉差异化。** 同一个绕线机视频模板 → 套不同Brand DNA → 选不同叙事角度 → 用不同素材 → 百万级组合空间 → 几乎不可能撞车。
+
+---
+
+### 三刀砍同质化
+
+#### 🔪 第一刀：Brand DNA → 视觉上就不同
+
+两套完整的 Brand DNA 配置，同一段素材进去，出来两条"看起来完全不同"的视频：
+
+```yaml
+# 隆江绕线机
+brand_dna:
+  color_primary: "#C8102E"    # 隆江红 — 品牌主色
+  color_accent: "#FFD700"     # 金色点缀
+  font_primary: "思源黑体 Bold"
+  font_secondary: "思源宋体"
+  logo: "longjiang_logo.png"
+  logo_position: "bottom-right"
+  logo_opacity: 0.15           # 水印式，不抢戏
+  transition_style: "hard_cut" # 工业感，干净利落
+  lower_third_style: "参数条-科技蓝底"
+  bgm_genre: ["industrial_tech", "orchestral"]
+  narration_style: "专业稳重"   # 数据说话
+  color_grading: "金属质感"
+```
+
+```yaml
+# 另一家绕线机厂（假设的竞品客户）
+brand_dna:
+  color_primary: "#0066CC"    # 科技蓝
+  color_accent: "#00FF88"     # 荧光绿
+  font_primary: "阿里巴巴普惠体"
+  logo_position: "top-left"
+  transition_style: "smooth_fade" # 柔和过渡
+  lower_third_style: "圆角卡片-白底"
+  bgm_genre: ["electronic", "ambient"]
+  narration_style: "亲切自然"
+  color_grading: "明亮通透"
+```
+
+#### 🔪 第二刀：叙事引擎 → 同一台机器能讲8个故事
+
+```yaml
+# config/narrative_angles.yaml — 叙事角度库
+angles:
+  pain_point:
+    name: "痛点式"
+    hook: "绕线效率提不上去？问题出在这里"
+    structure: [pain_hook, problem, solution_intro, feature_showcase, result, cta]
+    tone: "问题导向"
+    best_for: "抖音获客引流"
+    
+  tech_hardcore:
+    name: "技术硬核式"  
+    hook: "0.02mm的精度，是怎么做到的"
+    structure: [precision_hook, process, patent, test, spec_display, cta]
+    tone: "技术自信"
+    best_for: "行业影响力、展会展播"
+    
+  case_study:
+    name: "客户证言式"
+    hook: "XX电机厂用了三个月后告诉我们..."
+    structure: [customer_context, pain_recall, solution, usage_scene, result_data, cta]
+    tone: "真实可信"
+    best_for: "信任背书、B2B询盘转化"
+    
+  production_line:
+    name: "产线直击式"
+    hook: "今天带你看看一台绕线机是怎么造出来的"
+    structure: [factory_intro, material_flow, machine_action, qc_moment, finished_product, cta]
+    tone: "真实感、沉浸感"
+    best_for: "工厂实力展示"
+    
+  comparison:
+    name: "参数对比式"
+    hook: "传统绕线机 vs 隆江绕线机，差在哪"
+    structure: [comparison_hook, old_way, new_way, spec_contrast, efficiency_gain, cta]
+    tone: "数据碾压"
+    best_for: "说服采购决策者"
+    
+  founder_voice:
+    name: "创始人视角"
+    hook: "我做绕线机20年，说几句实话"
+    structure: [philosophy, industry_insight, design_principle, machine_showcase, promise, cta]
+    tone: "行业老炮"
+    best_for: "品牌IP建设、创始人账号"
+    
+  slow_cinematic:
+    name: "慢工细活式"
+    hook: ""  # 无旁白开场
+    structure: [visual_hook, slow_motion, detail_shot, wide_shot, brand_card]
+    tone: "氛围感"
+    best_for: "高端品牌形象、官网首页视频"
+    features: {no_narration: true, bgm_forward: true, subtitle_only: true}
+    
+  fast_tiktok:
+    name: "抖音快节奏爆款式"
+    hook: "这绕线速度，一分钟60个线圈"
+    structure: [claim_hook, proof_footage, spec_bullet, result, cta]
+    tone: "直给、冲击力"
+    best_for: "抖音信息流投放"
+    features: {speed_up: 1.2, big_text_overlay: true, duration: "15-25s"}
+
+# 智能选择逻辑
+selection_logic:
+  priority:
+    - "素材分析结果中高分镜头类型 → 推荐匹配角度"
+    - "品牌预设偏好（taizhou_longjiang.json 已配）"
+    - "发布平台 → 角度适配（抖音=快节奏，视频号=稳重型）"
+    - "随机变量（防同质化最后一道防线）"
+```
+
+#### 🔪 第三刀：素材驱动变异 → AI主动制造差异化
+
+这是最关键的一刀——**不是人选模板，是AI看过素材后主动决策**：
+
+```
+素材上传后，AI分析引擎输出：
+
+  素材报告 {
+    全景镜头: 1段, 清晰度0.78
+    运行特写: 2段, 清晰度[0.92★, 0.85]
+    屏幕/铭牌: 1段, OCR可提取参数
+    工人操作: 1段, 清晰度0.71
+    车间环境: 1段, 自然光线
+    缺失镜头: [成品线圈特写, 多角度运行]
+  }
+
+→ 运行特写清晰度0.92（高分）→ 自动推荐「技术硬核式」
+→ 屏幕OCR成功 → 自动提取参数填充字幕
+→ 有工人操作 → 也可选「产线直击式」
+→ 无成品特写 → 提示补拍，但不阻止生成
+```
+
+---
+
+### 变异因子：1400+种组合
+
+```yaml
+variation_factors:
+  narrative_angle:   8种   # 叙事角度
+  bgm_tracks:       10首   # BGM库（同genre内随机）
+  narration_speed:   3档   # 0.9x / 1.0x / 1.1x
+  color_presets:     5套   # 品牌调色方案
+  subtitle_styles:   4种   # 字幕样式
+  transition_rhythm: 3种   # 快切/匀速/慢镜主导
+
+  # 理论组合数：8 × 10 × 3 × 5 × 4 × 3 = 14,400
+  
+  prevention_rule:
+    - "同一客户连续两次生成 → 强制切换至少3个因子"
+    - "同一行业内客户 → 叙事角度分流，确保不撞车"
+    - "新客户首次生成 → 随机角度，收集偏好反馈"
+```
+
+---
+
+### 差异化对比：vs 剪映"一键成片"
+
+| 剪映怎么做 | 我们怎么做 |
+|-----------|----------|
+| 输入文字→匹配素材库（别人的画面） | 输入**客户自己的素材**→分析亮点 |
+| 模板固定、换文本不换骨架 | 模板是骨架，但叙事角度/BGM/色调/节奏全部可变 |
+| 5个同行业客户用同一个模板→5条雷同视频 | 5个客户→素材不同+Brand DNA不同+角度不同=5条**完全不同**的视频 |
+| 出片快，但一看就是"模板做的" | 出片也快，但**像定制** |
+
+---
+
+### 落地检查清单
+
+每个新视频类型上线前，必须通过反同质化验收：
+
+```
+□ brand_dna 参数是否全部生效（颜色/字体/Logo/水印）
+□ 叙事角度是否从素材分析结果驱动（非固定写死）
+□ 同一素材换一个角度能否生成不同的视频
+□ BGM/语速/色调是否从配置池智能选择（非固定值）
+□ 连续生成2条 → 是否自动切换了至少3个变异因子
+□ 不同品牌的同类型视频 → 视觉上是否明显不同
+```
+
+
+
+
+
+---
+
+## 可视化拍摄向导（品类专属 + AI参考图生成）
+
+> 核心洞察："不会拍"不是用户的问题，是产品做得不够好。
+
+### 设计目标
+
+每个行业/设备有专属的拍摄指南，配上AI生成的参考示意图，用户看图照着拍。不是一张通用纸，是「品类级可视化向导」。
+
+### 用户路径
+
+```
+打开 Web UI
+  |
+  v
+Step 1: 选行业
+  [自动化设备] [数控机床] [注塑机]
+  [冲压设备] [包装机械] [激光设备]
+  [工厂产线] [实体门店] ...
+  |
+  v
+Step 2: 选细分品类
+  自动化设备 ->
+  [无刷电机绕线机] [变压器绕线机]
+  [电感绕线机] [飞叉绕线机]
+  |
+  v
+Step 3: 拍摄向导（品类专属镜头组）
+  镜头 1/6：绕线机全景
+  [AI生成的参考示意图]
+  "退后3米，让整台机器在画面中央"
+  [参考图变体] [上传素材]
+  < 上一镜    下一镜 >
+```
+
+### 不同品类 = 不同的专属镜头组
+
+```
+绕线机专属镜头组              数控机床专属镜头组
+1 机器全景                    1 机床全身+防护门
+2 绕线头飞叉特写              2 刀具切削特写
+3 张力控制系统                3 主轴旋转近景
+4 控制屏参数                 4 刀库换刀过程
+5 成品线圈                   5 加工件表面质量
+6 车间环境                   6 控制面板+程序
+                             7 排屑/冷却系统
+注塑机专属镜头组              8 车间环境
+1 注塑机全景
+2 模具开合特写
+3 产品脱模瞬间
+4 机械手取料
+5 料筒/温控界面
+6 成品堆叠展示
+7 车间环境
+```
+
+### AI参考图生成：ComfyUI即时出图
+
+用户选到具体镜头 -> 系统用预设prompt调ComfyUI -> 3秒出参考图：
+
+用户选"无刷电机绕线机" -> "镜头2：绕线头特写"
+
+ComfyUI prompt:
+  "工业摄影风格，一台无刷电机绕线机的绕线头特写，
+   飞叉在高速旋转，铜线精准排列在定子上，
+   画面清晰对焦在绕线头上，浅景深背景虚化，
+   背景是干净整洁的车间，科技感灯光照明，
+   工业设备宣传片截图质感，1080x1920竖屏构图，
+   真实照片风格，金属表面反光细节"
+
+-> 3秒出图 -> 展示在向导页面上
+-> 老板一看就懂："哦，要这样拍"
+-> 拿手机照着拍 -> 素材质量直接拉满
+
+### 参考图多角度变体（天然防同质化）
+
+每个镜头生成不止一张参考图：
+
+镜头2：绕线头特写
+  正面平拍   |   45度斜拍   |   俯拍视角
+  飞叉居中   |   展示张力器  |   展示铜线
+  Reference  |   Reference  |   Reference
+      -> 不同客户选不同角度 -> 天然异构
+
+### 品类配置YAML（不写死代码）
+
+#### config/categories/winding_machine.yaml
+
+```yaml
+category:
+  name: "绕线机"
+  icon: "winding_icon.png"
+  description: "电机绕线设备，适合自动化绕线机厂家"
+  
+  sub_types:
+    - id: "brushless_motor"
+      name: "无刷电机绕线机"
+    - id: "transformer"
+      name: "变压器绕线机"
+    - id: "flyer"
+      name: "飞叉绕线机"
+    - id: "inductor"
+      name: "电感绕线机"
+  
+  shots:
+    - id: "machine_full"
+      name: "绕线机全景"
+      description: "退后2-3米，整台机器居中，展示完整结构"
+      reference_prompt: |
+        工业摄影，绕线机全身照，机器居中，
+        干净车间背景，正面平拍，竖屏1080x1920
+      variants: ["正面平拍", "45度角", "略俯拍"]
+      required: true
+      min_duration: 5
+      max_duration: 8
+      
+    - id: "winding_head"
+      name: "绕线头飞叉特写"
+      description: "手机靠近绕线头，对焦在飞叉上，拍到铜线排列"
+      reference_prompt: |
+        工业微距摄影，绕线机绕线头特写，
+        飞叉高速旋转，铜线精密排列在定子上，
+        浅景深，焦点在飞叉尖端，金属光泽
+      variants: ["正面特写", "45度展示张力器", "俯拍铜线"]
+      required: true
+      min_duration: 3
+      max_duration: 5
+      
+    - id: "tension_system"
+      name: "张力控制系统"
+      description: "拍摄张力器+线轴，展示线径控制精度"
+      reference_prompt: |
+        工业摄影，绕线机张力控制系统特写，
+        多个线轴整齐排列，张力器细节清晰，
+        线径参数标签可见，工业精密感
+      variants: ["全组张力器", "单个张力器细节"]
+      required: true
+      min_duration: 3
+      max_duration: 5
+      
+    - id: "control_panel"
+      name: "控制屏参数"
+      description: "正对触摸屏拍，保持2秒不动，展示关键参数"
+      reference_prompt: |
+        工业摄影，绕线机触摸屏控制界面特写，
+        屏幕显示绕线参数（转速/线径/匝数/张力），
+        正对屏幕无反光，操作界面现代感
+      variants: ["参数主界面", "运行状态界面"]
+      required: true
+      min_duration: 2
+      max_duration: 4
+      
+    - id: "finished_coil"
+      name: "成品线圈"
+      description: "展示绕好的线圈成品，展示工艺质量"
+      reference_prompt: |
+        工业产品摄影，绕线机完成的线圈成品特写，
+        铜线排列整齐紧密，表面光亮，
+        展示绕线精度和工艺水准，专业打光
+      variants: ["单线圈特写", "多线圈排列"]
+      required: true
+      min_duration: 3
+      max_duration: 5
+      
+    - id: "workshop"
+      name: "车间环境"
+      description: "从左到右慢扫车间全景，展示生产规模"
+      reference_prompt: |
+        工业摄影，自动化绕线设备车间全景，
+        多台绕线机整齐排列，工人有序操作，
+        干净整洁的现代工厂，自然光+车间顶灯
+      variants: ["车间全景", "产线近景"]
+      required: false
+      min_duration: 8
+      max_duration: 12
+```
+
+#### config/categories/cnc_machine.yaml
+
+```yaml
+category:
+  name: "数控机床"
+  icon: "cnc_icon.png"
+  description: "CNC加工中心，适合数控机床厂家和加工厂"
+  
+  shots:
+    - id: "full_body"
+      name: "机床全身+防护门"
+      description: "退后到能拍全整台机床，防护门关闭状态"
+      reference_prompt: |
+        工业摄影，数控机床全身照，防护门关闭，
+        干净车间背景，正面平拍，竖屏构图
+      required: true
+      min_duration: 5
+      
+    - id: "cutting_tool"
+      name: "刀具切削特写"
+      description: "靠近拍摄刀具正在切削金属工件的画面"
+      reference_prompt: |
+        工业微距摄影，数控机床刀具切削金属工件，
+        切屑飞出瞬间，对焦刀尖和工件接触点，
+        金属光泽，切削液飞溅，景深效果
+      required: true
+      min_duration: 4
+      
+    - id: "spindle"
+      name: "主轴旋转"
+      description: "拍摄主轴高速旋转的近景，展现转速"
+      reference_prompt: |
+        工业摄影，数控机床主轴旋转特写，
+        轻微动感模糊展现高转速，金属质感
+      required: false
+      min_duration: 4
+      
+    - id: "tool_changer"
+      name: "刀库换刀"
+      description: "拍摄自动换刀过程，刀臂动作的瞬间"
+      reference_prompt: |
+        工业摄影，数控机床自动换刀系统，
+        刀臂抓取刀具瞬间，机械结构特写
+      required: false
+      min_duration: 4
+      
+    - id: "finished_part"
+      name: "加工件表面质量"
+      description: "拍摄加工完成的工件，展示精度和表面光洁度"
+      reference_prompt: |
+        工业产品摄影，数控机床加工完成的金属零件特写，
+        表面光洁度高，展示精密加工水准
+      required: true
+      min_duration: 3
+      
+    - id: "control_program"
+      name: "控制面板+G代码"
+      description: "正对控制面板屏幕，展示自动化程序"
+      reference_prompt: |
+        工业摄影，数控机床控制面板特写，
+        屏幕显示加工程序或参数界面，无反光
+      required: false
+      min_duration: 3
+```
+
+### ComfyUI 集成方案
+
+```
+# services/reference_image_generator.py
+async def generate_reference(category_id, shot_id, variant=0):
+    """
+    调用ComfyUI生成拍摄参考图
+    
+    1. 从 config/categories/{category_id}.yaml 读 reference_prompt
+    2. 根据 variant 选择角度变体
+    3. 通过 ComfyUI API (127.0.0.1:8188) 生成图片
+    4. 返回图片URL或本地路径
+    """
+    config = load_category_config(category_id)
+    shot = config.shots[shot_id]
+    
+    prompt = build_variant_prompt(
+        shot.reference_prompt, 
+        shot.variants[variant]
+    )
+    
+    result = await comfyui.txt2img(
+        prompt=prompt,
+        negative="blurry, distorted, low quality",
+        width=1080, 
+        height=1920,
+        steps=20,
+    )
+    
+    return result.image_url
+```
+
+### 产品完整用户流程
+
+```
+Web UI 主流程：
+
+  [创建新视频]
+      |
+      +--> 选行业品类
+      |     +-- 绕线机 -> 无刷电机绕线机
+      |
+      +--> 拍摄向导（品类专属）
+      |     +-- 镜头1: 绕线机全景 [AI参考图x3] -> 上传
+      |     +-- 镜头2: 绕线头特写 [AI参考图x3] -> 上传
+      |     +-- 镜头3: 张力系统   [AI参考图x3] -> 上传
+      |     +-- 镜头4: 控制屏参数 [AI参考图x3] -> 上传
+      |     +-- 镜头5: 成品线圈   [AI参考图x3] -> 上传
+      |     +-- 镜头6: 车间环境   [AI参考图x3] -> 上传
+      |          |
+      |     AI自动质量检查 -> 提示哪些镜头需重拍
+      |
+      +--> 品牌信息
+      |     +-- 选已有品牌DNA 或 新建
+      |     +-- 填写：公司名/Logo/配色偏好/口播风格
+      |
+      +--> [一键生成视频]
+      |     +-- AI分析素材 -> 推荐叙事角度
+      |     +-- 生成脚本+分镜
+      |     +-- TTS配音+字幕
+      |     +-- BGM匹配
+      |     +-- 渲染输出
+      |
+      +--> 预览
+            +-- 满意 -> 下载 / 发布
+            +-- 不满意 -> 换角度再生成一条
+            +-- 微调 -> 导出剪映草稿
+```
+
+### 落地优先级
+
+| 阶段 | 内容 | 理由 |
+|------|------|------|
+| **P0（本周）** | 绕线机品类YAML配置文件 | 隆江自己先用起来 |
+| **P1（验证后）** | Web UI 拍摄向导 + AI参考图生成 | 有了第一条视频后开发界面 |
+| **P2** | 拓展3-5个品类（数控机床/注塑机/冲压） | 验证跨品类复用 |
+| **P3** | 用户自定义品类 + 自定义镜头组 | 平台化/SaaS化 |
 
 ## 核心设计理念：逆向开发 (Reverse Development)
 
@@ -479,8 +1020,8 @@ class BaseDetector(ABC):
 - **缺陷类检测器**（AI破绽/抖动）：score越高=问题越严重（0=正常, 1=明显异常）
 - `AssetAnalyzer` 统一处理两种方向，最终输出 `highlight_score`（值得展示的分数）
 
-**已实现**：FaceDetector, HandDetector, TextureDetector, TextDetector
-**待实现**：SharpnessDetector, CompositionDetector, SubjectDetector, StabilityDetector, ColorDetector, SceneClassifier
+**已实现**：SharpnessDetector, CompositionDetector, StabilityDetector, ColorDetector, FaceDetector, HandDetector, TextureDetector, TextDetector
+**待实现**：SubjectDetector, SceneClassifier, 视频帧提取管线, 跨检测器评分归一化标准
 
 ---
 
@@ -492,31 +1033,47 @@ class BaseDetector(ABC):
 - [x] HandDetector (手指粘连/比例/关节)
 - [x] TextureDetector (纹理塑料感/拼接痕)
 - [x] TextDetector (OCR乱码识别)
-- [ ] SharpnessDetector + CompositionDetector
-- [ ] 视频帧提取+逐帧分析管线
+- [x] SharpnessDetector (Laplacian variance 清晰度评分)
+- [x] CompositionDetector (显著区域+三分法构图分析)
+- [x] StabilityDetector (光流法抖动检测)
+- [x] ColorDetector (直方图+色偏/过曝/欠曝)
+- [ ] SubjectDetector (产品/人物/设备主体识别)
+- [ ] 视频帧提取+逐帧分析管线 (底层已有逐帧读取，缺专用管线)
 - [ ] 跨检测器评分归一化标准
 
 ### Phase 2：方案生成 — 脚本+配音+发布策略
-- [ ] BrandDNA Manager
-- [ ] ScriptGenerator (分析报告→LLM→结构化方案)
+- [x] ScriptGenerator (script_generator.py 31KB + script_engine.py 23KB, DeepSeek驱动)
+- [x] TTSBuilder (tts_builder.py + tts_providers.py, Edge TTS为主)
+- [x] LLM Provider 层 (llm_providers.py, DeepSeek→Qwen→Ollama fallback链)
+- [x] BGM系统 (bgm_mixer.py + bgm_library 8首曲库)
+- [ ] BrandDNA Manager (brand_loader.py 有基础加载，缺完整管理界面)
 - [ ] TitleGenerator (多平台标题+标签+封面方案)
-- [ ] TTSBuilder (脚本→TTS+SRT时间轴)
-- [ ] BGMMatcher (情绪→BGM自动匹配)
-- [ ] 配置驱动的视频类型系统
+- [ ] CoverDesigner (封面图自动生成)
+- [ ] 内容质量审核器 (quality_checker.py 有基础实现)
 
 ### Phase 3：视频合成 — Timeline→MP4
-- [ ] TimelineEngine (参数化时间轴)
-- [ ] CompositionBuilder (方案+素材→HyperFrames HTML)
-- [ ] 5套视频风格模板
-- [ ] SubtitleRenderer (SRT→ASS渲染)
-- [ ] 品牌水印/Logo叠加自动化
+- [x] CompositionBuilder (composition_builder.py, HTML+GSAP→Chromium→MP4)
+- [x] SubtitleEngine (subtitle_engine.py, SRT生成+叠加)
+- [x] BGM混音 (bgm_mixer.py, 多轨混音+人声/BGM平衡)
+- [x] ChromiumRenderer (chromium_renderer.py, Playwright headless渲染)
+- [x] 剪映导出 (jianying_exporter.py 33KB, 支持导出到剪映编辑)
+- [x] 素材管理 (asset_pipeline.py + storyboard_mapper.py)
+- [x] SFX音效库 (sfx_library.py)
+- [x] 电商组件 (components_ecommerce.py, 产品展示专用组件)
+- [ ] TimelineEngine (参数化时间轴 — 目前直接嵌入composition_builder)
+- [ ] 5套独立视频风格HTML模板 (ai_flaw_detect 有内联样式，其他类型待模板化)
+- [ ] Brand 水印/Logo叠加自动化
+- [ ] AvatarIntegrator (数字人集成)
 
-### Phase 4：发布+质量 — 企业级量产
+### Phase 4：发布+质量 — 企业级量产（均未开发）
 - [ ] PlatformAdapter (单视频→四平台版本)
 - [ ] PublishStrategy 生成器
 - [ ] PaidPromotion 方案生成
 - [ ] QualityGate 自动审核+AutoFix
 - [ ] BatchScheduler 参数化批量生产
+- [ ] publishing/ 目录不存在
+- [ ] quality/ 目录不存在
+- [ ] scheduler/ 目录不存在
 
 ### Phase 5：高级功能
 - [ ] Duix.Avatar 数字人克隆集成

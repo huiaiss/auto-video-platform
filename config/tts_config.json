@@ -1,38 +1,81 @@
 {
-  "default_voice": "zh-CN-YunxiNeural",
-  "default_speed": 1.1,
+  "default_voice": "longxiaochun",
+  "default_speed": 1.0,
   "pause_between_shots_s": 0.35,
-
   "providers": [
+    {
+      "name": "volcengine_tts",
+      "display_name": "Volcengine Speech TTS (火山引擎) — 已废弃",
+      "description": "已废弃，请使用 ark_tts（豆包语音合成2.0）。",
+      "priority": 99,
+      "enabled": false,
+      "word_timestamps": false
+    },
+    {
+      "name": "ark_tts",
+      "display_name": "豆包语音合成2.0 (火山引擎)",
+      "description": "新版 API Key 鉴权，只需在 https://console.volcengine.com/speech/api-key 创建 API Key。需要同时启动本地代理 (port 8791)。",
+      "models": [
+        "seed-tts-2.0"
+      ],
+      "default_model": "seed-tts-2.0",
+      "voices": [
+        "zh_female_2",
+        "zh_female_1",
+        "zh_male_1",
+        "zh_male_2",
+        "zh_female_cancan"
+      ],
+      "priority": 1,
+      "enabled": true,
+      "word_timestamps": false,
+      "default_voice": "zh_male_1",
+      "guide": "1. 打开 https://console.volcengine.com/speech/api-key 创建 API Key\n2. 填入 .env: VOLC_TTS_API_KEY\n3. 启动代理: python generators/ark_tts_proxy.py"
+    },
     {
       "name": "edge_tts",
       "display_name": "Edge TTS (Microsoft)",
       "description": "Free, high-quality Microsoft neural voices. No API key needed.",
       "voices": [
-        "zh-CN-YunxiNeural", "zh-CN-YunyangNeural", "zh-CN-XiaoxiaoNeural",
-        "zh-CN-YunjianNeural", "zh-CN-XiaoyiNeural", "zh-CN-YunxiaNeural"
+        "zh-CN-YunxiNeural",
+        "zh-CN-YunyangNeural",
+        "zh-CN-XiaoxiaoNeural",
+        "zh-CN-YunjianNeural",
+        "zh-CN-XiaoyiNeural",
+        "zh-CN-YunxiaNeural"
       ],
-      "priority": 1,
+      "priority": 2,
       "enabled": true,
       "word_timestamps": false
     },
     {
       "name": "cosyvoice",
       "display_name": "CosyVoice (Ali)",
-      "description": "Alibaba's CosyVoice - word-level timestamps, high quality Chinese. Requires local installation.",
-      "models": ["cosyvoice-300m", "cosyvoice-300m-sft", "cosyvoice-300m-instruct"],
+      "description": "??? CosyVoice ?? API via DashScope",
+      "models": [
+        "cosyvoice-300m",
+        "cosyvoice-300m-sft",
+        "cosyvoice-300m-instruct"
+      ],
       "default_model": "cosyvoice-300m-sft",
-      "voices": ["default", "chinese_male_1", "chinese_female_1"],
-      "priority": 2,
-      "enabled": false,
+      "voices": [
+        "default",
+        "chinese_male_1",
+        "chinese_female_1"
+      ],
+      "priority": 0,
+      "enabled": true,
       "word_timestamps": true,
-      "install_guide": "pip install cosyvoice && python -m cosyvoice.download"
+      "install_guide": "pip install dashscope",
+      "default_voice": "longxiaochun"
     },
     {
       "name": "coqui_tts",
       "display_name": "Coqui TTS (Open Source)",
       "description": "Open-source TTS with many models. Good for offline usage.",
-      "models": ["tts_models/zh-CN/baker/tacotron2-DDC-GST"],
+      "models": [
+        "tts_models/zh-CN/baker/tacotron2-DDC-GST"
+      ],
       "default_model": "tts_models/zh-CN/baker/tacotron2-DDC-GST",
       "priority": 3,
       "enabled": false,
@@ -44,15 +87,24 @@
       "display_name": "OpenAI TTS",
       "description": "Premium quality. Requires OpenAI API key.",
       "api_key_env": "OPENAI_API_KEY",
-      "models": ["tts-1", "tts-1-hd"],
+      "models": [
+        "tts-1",
+        "tts-1-hd"
+      ],
       "default_model": "tts-1",
-      "voices": ["alloy", "echo", "fable", "onyx", "nova", "shimmer"],
+      "voices": [
+        "alloy",
+        "echo",
+        "fable",
+        "onyx",
+        "nova",
+        "shimmer"
+      ],
       "priority": 4,
       "enabled": false,
       "word_timestamps": false
     }
   ],
-
   "word_timestamp": {
     "enabled": true,
     "preferred_provider": "cosyvoice",

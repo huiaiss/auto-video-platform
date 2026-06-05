@@ -1,0 +1,41 @@
+# Component Registry Manifest
+# Maps component_set names to their registry locations and module lists.
+# Used by builders/component_loader.py to import and resolve registries.
+#
+# Each set:
+#   registry: Python variable name of the registry dict
+#   style: visual style identifier
+#   modules: Python modules to import (triggers @_register side effects)
+#   registry_module: where the populated registry dict lives after imports
+
+component_sets:
+  content_deconstruct:
+    registry: "COMPONENT_REGISTRY"
+    style: "content_deconstruct"
+    registry_module: "builders.components"
+    modules:
+      - builders.components.social_frame
+      - builders.components.glitch_transition
+      - builders.components.reveal_text
+      - builders.components.zoom_analyze
+      - builders.components.compare_split
+      - builders.components.title_card
+      - builders.components.data_card
+      - builders.components.checklist_card
+      - builders.components.outro
+      - builders.components.scan_overlay
+      - builders.components.progress_bar
+
+  ecommerce:
+    registry: "ECOMMERCE_REGISTRY"
+    style: "ecommerce"
+    registry_module: "builders.components_ecommerce"
+    modules:
+      - builders.components_ecommerce
+
+  enterprise:
+    registry: "ENTERPRISE_REGISTRY"
+    style: "enterprise"
+    registry_module: "builders.components_enterprise"
+    modules:
+      - builders.components_enterprise

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=1080, height=1920" />
-  <script src="node_modules/gsap/dist/gsap.min.js"></script>
+  <script src="./gsap.min.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
@@ -32,6 +32,49 @@
       background: linear-gradient(to top, rgba(6,6,11,0.95) 0%, rgba(6,6,11,0.5) 50%, transparent 100%);
     }
 
+    /* ── Click-to-start overlay ── */
+    .start-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(6,6,11,0.92); z-index: 9999;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      cursor: pointer;
+    }
+    .start-overlay .play-icon {
+      width: 120px; height: 120px; border-radius: 50%;
+      border: 3px solid #00e676; color: #00e676;
+      font-size: 40px; display: flex; align-items: center; justify-content: center;
+      margin-bottom: 30px; transition: transform 0.2s;
+    }
+    .start-overlay:hover .play-icon { transform: scale(1.1); }
+    .start-overlay .start-text {
+      color: #aaa; font-size: 28px; letter-spacing: 4px;
+    }
+
+    /* ── Subtitle / Caption overlay ── */
+    .subtitle-container {
+      position: absolute; bottom: 200px; left: 60px; right: 60px;
+      z-index: 50; pointer-events: none;
+      text-align: center;
+    }
+    .subtitle-line {
+      display: inline-block; color: #fff; font-size: 42px; font-weight: 700;
+      line-height: 1.5; letter-spacing: 0.04em;
+      padding: 12px 32px; border-radius: 12px;
+      background: rgba(0,0,0,0.65);
+      text-shadow: 0 2px 8px rgba(0,0,0,0.8);
+      max-width: 960px;
+    }
+    .subtitle-line .sub-highlight {
+      color: #ffeb3b; font-weight: 900;
+    }
+
+
+
+    /* ── Brand color overrides (from creative brief) ── */
+    :root {
+      --brand-primary: #00e676;
+      --brand-accent: #ff1744;
+    }
 
     /* ── Scan overlay ── */
     .scan-overlay {
@@ -55,11 +98,11 @@
     }
     .progress-fill {
       height: 100%; width: 0%;
-      background: linear-gradient(90deg, #00e676, #00c853);
+      background: linear-gradient(90deg, var(--brand-primary), #00e676cc);
     }
     .progress-dot {
       position: absolute; top: 0; width: 3px; height: 6px;
-      background: rgba(255,23,68,0.5);
+      background: var(--brand-accent);
     }
 
 
@@ -136,70 +179,6 @@
             box-shadow:0 0 40px rgba(255,23,68,0.7);}
         
 
-        .neon-circle{position:absolute;border-radius:50%;z-index:12;pointer-events:none;
-            border:5px solid #ff1744;
-            box-shadow:0 0 50px rgba(255,23,68,0.8),0 0 90px rgba(255,23,68,0.35);}
-        .neon-circle-inner{position:absolute;border-radius:50%;
-            border:2px dashed rgba(255,23,68,0.45);}
-        .keyword-tag{position:absolute;z-index:13;pointer-events:none;
-            background:#ff1744;color:#fff;
-            font-size:34px;font-weight:900;padding:12px 30px;border-radius:14px;
-            box-shadow:0 0 50px rgba(255,23,68,0.6),0 8px 24px rgba(0,0,0,0.5);}
-        .deviation-tag{position:absolute;z-index:14;pointer-events:none;
-            background:rgba(0,0,0,0.9);color:#ff1744;
-            font-size:28px;font-weight:700;padding:10px 22px;border-radius:12px;
-            border:1px solid rgba(255,23,68,0.5);}
-        .deviation-big{font-size:54px;font-weight:900;display:block;line-height:1.1;}
-        .meas-ref-line{position:absolute;z-index:13;pointer-events:none;
-            height:3px;background:#00e676;
-            box-shadow:0 0 18px rgba(0,230,118,0.5);}
-        .meas-deviation-line{position:absolute;z-index:13;pointer-events:none;
-            height:4px;background:#ff1744;
-            box-shadow:0 0 26px rgba(255,23,68,0.6);}
-        .joint-straight-line{position:absolute;z-index:13;pointer-events:none;
-            height:5px;background:#ff9100;
-            box-shadow:0 0 28px rgba(255,145,0,0.7);
-            transform-origin:left center;}
-        .count-badge{position:absolute;z-index:14;pointer-events:none;
-            width:80px;height:80px;border-radius:50%;
-            background:#ff1744;color:#fff;
-            font-size:42px;font-weight:900;
-            display:flex;align-items:center;justify-content:center;
-            box-shadow:0 0 40px rgba(255,23,68,0.7);}
-        
-
-        .neon-circle{position:absolute;border-radius:50%;z-index:12;pointer-events:none;
-            border:5px solid #ff1744;
-            box-shadow:0 0 50px rgba(255,23,68,0.8),0 0 90px rgba(255,23,68,0.35);}
-        .neon-circle-inner{position:absolute;border-radius:50%;
-            border:2px dashed rgba(255,23,68,0.45);}
-        .keyword-tag{position:absolute;z-index:13;pointer-events:none;
-            background:#ff1744;color:#fff;
-            font-size:34px;font-weight:900;padding:12px 30px;border-radius:14px;
-            box-shadow:0 0 50px rgba(255,23,68,0.6),0 8px 24px rgba(0,0,0,0.5);}
-        .deviation-tag{position:absolute;z-index:14;pointer-events:none;
-            background:rgba(0,0,0,0.9);color:#ff1744;
-            font-size:28px;font-weight:700;padding:10px 22px;border-radius:12px;
-            border:1px solid rgba(255,23,68,0.5);}
-        .deviation-big{font-size:54px;font-weight:900;display:block;line-height:1.1;}
-        .meas-ref-line{position:absolute;z-index:13;pointer-events:none;
-            height:3px;background:#00e676;
-            box-shadow:0 0 18px rgba(0,230,118,0.5);}
-        .meas-deviation-line{position:absolute;z-index:13;pointer-events:none;
-            height:4px;background:#ff1744;
-            box-shadow:0 0 26px rgba(255,23,68,0.6);}
-        .joint-straight-line{position:absolute;z-index:13;pointer-events:none;
-            height:5px;background:#ff9100;
-            box-shadow:0 0 28px rgba(255,145,0,0.7);
-            transform-origin:left center;}
-        .count-badge{position:absolute;z-index:14;pointer-events:none;
-            width:80px;height:80px;border-radius:50%;
-            background:#ff1744;color:#fff;
-            font-size:42px;font-weight:900;
-            display:flex;align-items:center;justify-content:center;
-            box-shadow:0 0 40px rgba(255,23,68,0.7);}
-        
-
         .compare-wrap{position:absolute;top:160px;left:30px;right:30px;bottom:440px;display:flex;gap:12px;}
         .compare-half{flex:1;border-radius:16px;overflow:hidden;position:relative;border:2px solid rgba(255,255,255,0.06);}
         .compare-half img{width:100%;height:100%;object-fit:cover;}
@@ -218,12 +197,17 @@
   </style>
 </head>
 <body>
+  <div class="start-overlay" id="startOverlay" onclick="startVideo()">
+    <div class="play-icon">▶</div>
+    <div class="start-text">点击播放</div>
+  </div>
 
-  <audio id="narration" src="assets/narration.mp3" style="display:none;"></audio>
-  <audio id="bgm" src="assets/bgm_tech.mp3" loop style="display:none;"></audio>
+  <audio id="narration" src="audio/narration.mp3" style="display:none;"></audio>
+  <audio id="bgm" src="bgm_tech.mp3" loop style="display:none;"></audio>
   <div class="scene-bg-dark" id="globalBgDark"></div>
   <div class="gradient-top" id="gradTop"></div>
   <div class="gradient-bottom" id="gradBot"></div>
+<div id="scene_0" class="clip" style="opacity:0">
 
         <div class="sm-bg" id="smBg"></div>
         <div class="sm-statusbar" id="smStatus">
@@ -263,6 +247,8 @@
             </div>
         </div>
         
+</div>
+<div id="scene_1" class="clip" style="opacity:0">
 
         <div class="glitch-r" id="glR"></div>
         <div class="glitch-g" id="glG"></div>
@@ -272,6 +258,8 @@
         <div class="glitch-slice" id="glS3" style="top:1500px;height:120px;"></div>
         <div class="glitch-vcr" id="glVcr"></div>
         
+</div>
+<div id="scene_2" class="clip" style="opacity:0">
 
         <div style="position:absolute;top:0;left:0;width:1080px;height:1920px;background:#06060b;z-index:1;opacity:0;" id="s1Dark"></div>
         <img src="assets/img2_group_photo.png" style="position:absolute;width:1080px;height:1920px;object-fit:cover;z-index:2;opacity:0;" id="img1" />
@@ -280,6 +268,8 @@
         <div style="position:absolute;bottom:0;left:0;width:1080px;height:500px;background:linear-gradient(to top,rgba(6,6,11,0.95) 0%,rgba(6,6,11,0.5) 50%,transparent 100%);z-index:5;"></div>
         <div style="position:absolute;top:0;left:0;width:1080px;height:200px;background:linear-gradient(to bottom,rgba(6,6,11,0.7) 0%,transparent 100%);z-index:5;"></div>
         
+</div>
+<div id="scene_3" class="clip" style="opacity:0">
 
         <div style="width:1080px;height:1920px;overflow:hidden;position:absolute;" data-layout-allow-overflow>
             <img src="assets/img2_group_photo.png" style="position:absolute;width:1080px;height:1920px;object-fit:cover;will-change:transform;transform-origin:540px 1200px;" id="img2" />
@@ -303,6 +293,8 @@
             
         <div style="position:absolute;top:80px;left:60px;color:#00e676;font-size:26px;font-weight:700;letter-spacing:0.15em;z-index:11;background:rgba(0,230,118,0.08);border:1px solid rgba(0,230,118,0.2);padding:8px 24px;border-radius:8px;" id="lbl2">① 先看手</div>
         
+</div>
+<div id="scene_4" class="clip" style="opacity:0">
 
         <div style="width:1080px;height:1920px;overflow:hidden;position:absolute;" data-layout-allow-overflow>
             <img src="assets/img2_group_photo.png" style="position:absolute;width:1080px;height:1920px;object-fit:cover;will-change:transform;transform-origin:600px 500px;" id="img3" />
@@ -330,6 +322,8 @@
             
         <div style="position:absolute;top:80px;left:60px;color:#00e676;font-size:26px;font-weight:700;letter-spacing:0.15em;z-index:11;background:rgba(0,230,118,0.08);border:1px solid rgba(0,230,118,0.2);padding:8px 24px;border-radius:8px;" id="lbl3">② 再看脸</div>
         
+</div>
+<div id="scene_5" class="clip" style="opacity:0">
 
         <div style="width:1080px;height:1920px;overflow:hidden;position:absolute;" data-layout-allow-overflow>
             <img src="assets/img2_group_photo.png" style="position:absolute;width:1080px;height:1920px;object-fit:cover;will-change:transform;transform-origin:500px 1400px;" id="img4" />
@@ -354,6 +348,8 @@
             
         <div style="position:absolute;top:80px;left:60px;color:#00e676;font-size:26px;font-weight:700;letter-spacing:0.15em;z-index:11;background:rgba(0,230,118,0.08);border:1px solid rgba(0,230,118,0.2);padding:8px 24px;border-radius:8px;" id="lbl4">③ 看关节</div>
         
+</div>
+<div id="scene_6" class="clip" style="opacity:0">
 
         <div style="position:absolute;top:0;left:0;width:1080px;height:1920px;background:radial-gradient(ellipse at 50% 40%,#0d1b2a 0%,#06060b 70%);"></div>
         <div class="compare-wrap" id="cmpWrap">
@@ -395,6 +391,8 @@
             </div>
         </div>
         
+</div>
+<div id="scene_7" class="clip" style="opacity:0">
 
         <div style="position:absolute;top:0;left:0;width:1080px;height:1920px;background:radial-gradient(ellipse at 50% 40%,#0d1b2a,#06060b 70%);"></div>
         <div style="position:absolute;top:400px;left:50%;margin-left:-150px;width:300px;height:300px;border-radius:50%;border:2px solid rgba(0,230,118,0.12);" id="oring"></div>
@@ -408,6 +406,9 @@
         <div id="osub" style="position:absolute;top:850px;left:80px;right:80px;text-align:center;color:#00e676;font-size:36px;font-weight:600;">关注我，下次被骗的不是你</div>
         <div id="oteaser" style="position:absolute;top:960px;left:80px;right:80px;text-align:center;color:#888;font-size:30px;">下期：5个AI检测工具横评 →</div>
         
+        
+        
+</div>
   <div class="scan-overlay" id="scanOverlay"></div>
   <div class="scan-line" id="scanLine" style="top:0;"></div>
   <div class="progress-wrap"><div class="progress-fill" id="progressFill"></div>
@@ -417,6 +418,7 @@
     <div class="progress-dot" style="left:61.5%;"></div>
     <div class="progress-dot" style="left:80.8%;"></div>
   </div>
+  <div class="subtitle-container" id="subContainer"></div>
 
 </body>
 </html>
@@ -426,7 +428,8 @@
 // HyperFrames timeline
 // ═══════════════════════════════════════════════════════════
 var E = "power3.inOut";
-var tl = gsap.timeline({ paused: true });
+var AUTOPLAY = new URLSearchParams(window.location.search).has("autoplay");
+var tl = gsap.timeline({ paused: !AUTOPLAY });
 
 // ── Global timeline registration ──
 window.__timelines = window.__timelines || {};
@@ -623,8 +626,55 @@ tl.fromTo("#scanLine",{top:"-2%"},{top:"102%",duration:34.0,ease:"none"},8.0);
 // ── Progress bar ──
 tl.to("#progressFill",{width:"100%",duration:52.0,ease:"none"},0);
 
-// ── Audio playback ──
-tl.call(function(){ var a=document.getElementById("narration"); if(a)a.play(); },[],0);
+// ── Audio now handled by startVideo() click handler ──
 
-tl.play();
+// Subtitles: no SRT data
+
+// Scene visibility
+tl.set("#scene_0",{opacity:0},0);
+tl.to("#scene_0",{opacity:1,duration:0.25,ease:"power3.out"},0.00);
+tl.to("#scene_0",{opacity:0,duration:0.25,ease:"power3.in"},3.75);
+tl.set("#scene_1",{opacity:0},0);
+tl.to("#scene_1",{opacity:1,duration:0.25,ease:"power3.out"},3.20);
+tl.to("#scene_1",{opacity:0,duration:0.25,ease:"power3.in"},5.25);
+tl.set("#scene_2",{opacity:0},0);
+tl.to("#scene_2",{opacity:1,duration:0.25,ease:"power3.out"},5.20);
+tl.to("#scene_2",{opacity:0,duration:0.25,ease:"power3.in"},8.25);
+tl.set("#scene_3",{opacity:0},0);
+tl.to("#scene_3",{opacity:1,duration:0.25,ease:"power3.out"},7.70);
+tl.to("#scene_3",{opacity:0,duration:0.25,ease:"power3.in"},15.75);
+tl.set("#scene_4",{opacity:0},0);
+tl.to("#scene_4",{opacity:1,duration:0.25,ease:"power3.out"},15.70);
+tl.to("#scene_4",{opacity:0,duration:0.25,ease:"power3.in"},23.75);
+tl.set("#scene_5",{opacity:0},0);
+tl.to("#scene_5",{opacity:1,duration:0.25,ease:"power3.out"},23.70);
+tl.to("#scene_5",{opacity:0,duration:0.25,ease:"power3.in"},31.75);
+tl.set("#scene_6",{opacity:0},0);
+tl.to("#scene_6",{opacity:1,duration:0.25,ease:"power3.out"},31.70);
+tl.to("#scene_6",{opacity:0,duration:0.25,ease:"power3.in"},41.75);
+tl.set("#scene_7",{opacity:0},0);
+tl.to("#scene_7",{opacity:1,duration:0.25,ease:"power3.out"},41.70);
+tl.to("#scene_7",{opacity:0,duration:0.25,ease:"power3.in"},51.75);
+
+// ── Autoplay mode (recording) ──
+if (AUTOPLAY) {
+  var overlay = document.getElementById("startOverlay");
+  if (overlay) overlay.style.display = "none";
+  var a = document.getElementById("narration");
+  if (a) a.play().catch(function(e) { console.log("Audio:", e); });
+  var b = document.getElementById("bgm");
+  if (b) { b.volume = 0.12; b.play().catch(function(){}); }
+  tl.play();
+}
+
+// ── Click-to-start (fixes browser autoplay policy) ──
+function startVideo() {
+  var overlay = document.getElementById("startOverlay");
+  if (overlay) overlay.style.display = "none";
+  var a = document.getElementById("narration");
+  if (a) a.play().catch(function(e) { console.log("Audio:", e); });
+  var b = document.getElementById("bgm");
+  if (b) { b.volume = 0.12; b.play().catch(function(){}); }
+  tl.play();
+}
 </script>

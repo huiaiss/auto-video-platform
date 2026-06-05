@@ -1,0 +1,30 @@
+<!--  Nav EN  -->
+<nav class="lj-nav" id="ljNav">
+  <div class="lj-nav-inner">
+    <a href="/en/" class="lj-nav-brand">
+      <span class="lj-nav-dot"></span>
+      <span class="lj-nav-name">Longjiang Automation</span>
+    </a>
+    <button class="lj-nav-toggle" id="ljNavToggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="lj-nav-links" id="ljNavLinks">
+      <li><a href="/en/">Home</a></li>
+      <li class="lj-dropdown">
+        <a href="javascript:void(0)">Products <span class="lj-dropdown-arrow">&#9660;</span></a>
+        <ul class="lj-dropdown-menu">
+          <li><a href="/en/products/">All Products</a></li>
+          <li><a href="/en/products/?cat=Winding Machine">Winding Machine</a></li>
+          <li><a href="/en/products/?cat=Magnet Machine">Magnet Machine</a></li>
+          <li><a href="/en/products/?cat=Paper Inserter">Paper Inserter</a></li>
+          <li><a href="/en/products/?cat=Other">Other</a></li>
+        </ul>
+      </li>
+      <li><a href="/en/videos/">Videos</a></li>
+      <li><a href="/en/cases/">Cases</a></li>
+      <li><a href="/en/about/">About</a></li>
+      <li><a href="/en/contact/" class="lj-nav-cta">📞 Contact</a></li>
+      <li><a href="javascript:toggleLang()" class="lj-nav-lang">🌐 中文</a></li>
+    </ul>
+  </div>
+</nav>
