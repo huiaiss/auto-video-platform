@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=5.0">
+<meta name="description" content="帧导 Visual-Hub — 28种工业级Visual Hooks方案库，覆盖14类镜头设计，用于工业设备宣传片视觉策划。">
+<meta name="format-detection" content="telephone=yes">
+<title>Visual-Hub Historical Solutions | Longjiang Automation</title>
+<link rel="canonical" href="https://www.longjiang-ai.com/en/visual-hub/">
+<link rel="alternate" hreflang="zh-CN" href="https://www.longjiang-ai.com/visual-hub/">
+<link rel="alternate" hreflang="en" href="https://www.longjiang-ai.com/en/visual-hub/">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--primary:#0066cc;--secondary:#00a8ff;--bg-dark:#0a1628;--bg-card:#0f1d35;--text-primary:#f0f4ff;--text-secondary:#8a9bb5;--text-muted:#5a6d8a;--border:rgba(0,87,184,0.25);--radius:12px;}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg-dark);color:var(--text-primary);line-height:1.6;overflow-x:hidden;}
+.lj-nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(10,22,40,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);}
+.lj-nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:60px;}
+.lj-nav-brand{display:flex;align-items:center;gap:8px;text-decoration:none;font-weight:700;font-size:18px;color:var(--text-primary);}
+.lj-nav-dot{width:8px;height:8px;background:var(--secondary);border-radius:50%;box-shadow:0 0 12px var(--secondary);}
+.lj-nav-links{display:flex;align-items:center;gap:6px;list-style:none;}
+.lj-nav-links a{display:block;padding:8px 16px;color:var(--text-secondary);text-decoration:none;font-size:14px;border-radius:8px;transition:all 0.2s;}
+.lj-nav-links a:hover{color:var(--text-primary);background:rgba(0,87,184,0.15);}
+.lj-nav-cta{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff!important;}
+.lj-nav-cta:hover{box-shadow:0 4px 16px rgba(0,87,184,0.4);}
+.lj-nav-lang{color:#00a8ff!important;font-weight:600;border:1px solid rgba(0,168,255,0.25);border-radius:20px!important;padding:6px 14px!important;}
+.lj-nav-lang:hover{background:rgba(0,168,255,0.1)!important;}
+.lj-nav-toggle{display:none;background:none;border:none;cursor:pointer;padding:8px;flex-direction:column;gap:4px;}
+.lj-nav-toggle span{display:block;width:22px;height:2px;background:#f0f4ff;border-radius:2px;transition:all 0.3s;}
+.hero{min-height:50vh;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:100px 20px 40px;}
+.hero-bg{position:absolute;inset:0;z-index:0;background:linear-gradient(135deg,#0a1628,#1a2a4a);}
+.hero-bg::before{content:'';position:absolute;top:-30%;right:-20%;width:500px;height:500px;background:radial-gradient(circle,rgba(0,87,184,0.12),transparent 70%);}
+.hero-content{position:relative;z-index:2;text-align:center;max-width:800px;}
+.hero-tag{display:inline-block;padding:6px 16px;background:rgba(0,87,184,0.15);border:1px solid rgba(0,87,184,0.3);border-radius:20px;font-size:12px;color:var(--text-secondary);letter-spacing:2px;margin-bottom:24px;}
+.hero h1{font-size:40px;font-weight:800;line-height:1.2;margin-bottom:16px;}
+.hero h1 .highlight{background:linear-gradient(135deg,#fff 30%,var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero p{font-size:16px;color:var(--text-secondary);margin-bottom:0;line-height:1.7;max-width:640px;margin-left:auto;margin-right:auto;}
+.hero-stats{display:flex;gap:30px;justify-content:center;margin-top:32px;flex-wrap:wrap;}
+.hero-stat{text-align:center;}
+.hero-stat-num{font-size:32px;font-weight:800;background:linear-gradient(135deg,var(--primary),var(--secondary));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-stat-label{font-size:13px;color:var(--text-muted);margin-top:4px;}
+.cat-section{padding:40px 20px;max-width:1200px;margin:0 auto;}
+.cat-category{font-size:22px;font-weight:800;margin-bottom:18px;color:var(--text-primary);display:flex;align-items:center;gap:8px;}
+.cat-count{font-size:13px;color:var(--text-muted);font-weight:400;}
+.hook-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;}
+.hook-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;transition:all 0.25s;display:flex;flex-direction:column;}
+.hook-card:hover{transform:translateY(-2px);border-color:var(--secondary);box-shadow:0 4px 20px rgba(0,87,184,0.1);}
+.hook-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.hook-name{font-size:15px;font-weight:700;color:var(--text-primary);}
+.hook-duration{font-size:11px;color:var(--secondary);background:rgba(0,168,255,0.08);padding:2px 10px;border-radius:10px;}
+.hook-prompt{font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:12px;flex:1;}
+.hook-why{display:flex;gap:8px;align-items:flex-start;font-size:12px;color:var(--text-muted);padding-top:10px;border-top:1px solid rgba(0,87,184,0.12);}
+.hook-why-label{color:var(--secondary);white-space:nowrap;font-weight:600;}
+.lj-footer{background:linear-gradient(180deg,#0a1628,#050d1a);border-top:1px solid var(--border);padding:40px 20px 20px;}
+.lj-footer-inner{max-width:1200px;margin:0 auto;}
+.lj-footer-cols{display:grid;grid-template-columns:1fr 1fr 1fr;gap:30px;margin-bottom:30px;}
+.lj-footer-col h4{font-size:14px;font-weight:700;color:var(--secondary);margin-bottom:14px;letter-spacing:1px;}
+.lj-footer-col ul{list-style:none;padding:0;}
+.lj-footer-col ul li{margin-bottom:8px;}
+.lj-footer-col ul li a{color:var(--text-secondary);text-decoration:none;font-size:13px;transition:color 0.2s;}
+.lj-footer-col ul li a:hover{color:var(--text-primary);}
+.lj-footer-contact li{color:var(--text-secondary);font-size:13px;line-height:1.8;}
+.lj-footer-bottom{text-align:center;padding-top:20px;border-top:1px solid var(--border);}
+.lj-footer-bottom p{font-size:12px;color:var(--text-muted);line-height:1.8;}
+.lj-footer-tagline{font-size:11px;opacity:0.5;letter-spacing:1px;margin-top:4px!important;}
+.lj-float-bar{position:fixed;bottom:0;left:0;right:0;z-index:1000;display:flex;background:rgba(10,22,40,0.97);backdrop-filter:blur(12px);border-top:1px solid var(--border);padding:8px 12px;justify-content:space-around;}
+.lj-float-phone{color:var(--secondary);}
+.lj-float-wechat{color:#07c160;}
+.lj-float-form{color:#fff;background:linear-gradient(135deg,var(--primary),var(--secondary));border-radius:8px;padding:6px 18px;}
+.lj-float-form span{font-weight:600;font-size:12px;}
+body{padding-bottom:72px;}
+@media(min-width:768px){.hero h1{font-size:48px;}.lj-float-bar{left:auto;right:24px;bottom:24px;flex-direction:column;gap:8px;background:rgba(10,22,40,0.9);border:1px solid var(--border);border-radius:16px;padding:10px 8px;width:auto;box-shadow:0 8px 32px rgba(0,0,0,0.3);}body{padding-bottom:0;}}
+@media(max-width:767px){.hero h1{font-size:28px;}.hook-grid{grid-template-columns:1fr;}.lj-nav-links{display:none;}.lj-footer-cols{grid-template-columns:1fr;gap:20px;}}
+</style>
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<script src="/visual-hub/hooks-data.js"></script>
+</head>
+<body>
+<nav class="lj-nav" id="ljNav">
+  <div class="lj-nav-inner">
+    <a href="/en/" class="lj-nav-brand">
+      <span class="lj-nav-dot"></span>
+      <span class="lj-nav-name">Longjiang Automation</span>
+    </a>
+    <button class="lj-nav-toggle" id="ljNavToggle" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="lj-nav-links" id="ljNavLinks">
+      <li><a href="/en/">Home</a></li>
+      <li><a href="/en/products/">Products</a></li>
+      <li><a href="/en/cases/">Cases</a></li>
+      <li><a href="/en/visual-hub/" style="color:#00a8ff;font-weight:600;">Visual-Hub</a></li>
+      <li><a href="/en/about/">About</a></li>
+      <li><a href="/en/contact/" class="lj-nav-cta">📞 Inquire</a></li>
+      <li><a href="javascript:toggleLang()" class="lj-nav-lang">🌐 中文</a></li>
+    </ul>
+  </div>
+</nav>
+<main>
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-tag">🎬 VISUAL-HUB</div>
+    <h1>Industrial Visual <span class="highlight">Historical Solutions</span></h1>
+    <p>Visual-Hub is our in-house industrial video visual solution engine, providing 28 Visual Hooks for equipment promotional videos - covering shot design, rhythm arrangement, and visual impact.</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hero-stat-num">28</div><div class="hero-stat-label">Visual Hooks</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">14</div><div class="hero-stat-label">Categories</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">2-3s</div><div class="hero-stat-label">Per Hook</div></div>
+    </div>
+  </div>
+</section>
+<div id="vh-content"></div>
+</main>
+<footer class="lj-footer">
+  <div class="lj-footer-inner">
+    <div class="lj-footer-cols">
+      <div class="lj-footer-col">
+        <h4>Products</h4>
+        <ul>
+          <li><a href="/en/products/?cat=Winding Machine">Winding Machines</a></li>
+          <li><a href="/en/products/?cat=Magnet Machine">Magnet Machines</a></li>
+          <li><a href="/en/products/?cat=Paper Inserter">Paper Inserters</a></li>
+          <li><a href="/en/products/">All Equipment</a></li>
+        </ul>
+      </div>
+      <div class="lj-footer-col">
+        <h4>About Us</h4>
+        <ul>
+          <li><a href="/en/about/">Company</a></li>
+          <li><a href="/en/cases/">Cases</a></li>
+          <li><a href="/en/visual-hub/">Visual-Hub库</a></li>
+          <li><a href="/en/service/">Service</a></li>
+        </ul>
+      </div>
+      <div class="lj-footer-col">
+        <h4>Contact</h4>
+        <ul class="lj-footer-contact">
+          <li>📞 <a href="tel:18968693691">18968693691</a></li>
+          <li>✉ WeChat: ljzdh888</li>
+          <li>📍 Taizhou, Zhejiang, China</li>
+        </ul>
+      </div>
+    </div>
+    <div class="lj-footer-bottom">
+      <p>&copy; 2026 Taizhou Longjiang Automation Equipment Co., Ltd. | Making Winding Smarter</p>
+      <p class="lj-footer-tagline">AI-Powered Inquiry Engine — Helping Your Machines Get Found</p>
+    </div>
+  </div>
+</footer>
+<div class="lj-float-bar" id="ljFloatBar">
+  <a class="lj-float-item lj-float-phone" href="tel:18968693691"><span>📞 Call</span></a>
+  <button class="lj-float-item lj-float-wechat" onclick="copyWechatFloat()"><span>✉ WeChat</span></button>
+  <a class="lj-float-item lj-float-form" href="/en/contact/"><span>Get Solution</span></a>
+</div>
+<script>
+// Render hooks
+var EN_CATS = {
+  '宏大震撼':'Grand Impact','微观揭秘':'Micro Revelation','视觉冲击':'Visual Impact',
+  '流体美学':'Fluid Aesthetics','科技粒子':'Tech Particles','光影叙事':'Light & Shadow',
+  '数字故障':'Digital Glitch','节奏变速':'Tempo Shift','时空错位':'Time-Space',
+  '抽象美学':'Abstract Aesthetics','镜头聚焦':'Focus','对比展示':'Comparison',
+  '渐进揭示':'Progressive Reveal','空间叙事':'Spatial Narrative'
+};
+var EMOJIS = {
+  '宏大震撼':'🌋','微观揭秘':'🔬','视觉冲击':'💥','流体美学':'🌊','科技粒子':'✨',
+  '光影叙事':'💡','数字故障':'📺','节奏变速':'⏱️','时空错位':'🌀','抽象美学':'🎨',
+  '镜头聚焦':'📷','对比展示':'⚖️','渐进揭示':'🔍','空间叙事':'🏭'
+};
+var container = document.getElementById('vh-content');
+if (container && typeof VISUAL_HOOKS !== 'undefined') {
+  var html = '';
+  for (var cat in VISUAL_HOOKS) {
+    var items = VISUAL_HOOKS[cat];
+    var emoji = EMOJIS[cat] || '🎬';
+    var catEn = EN_CATS[cat] || cat;
+    html += '<div class="cat-section">';
+    html += '  <h2 class="cat-category">' + emoji + ' ' + catEn + ' <span class="cat-count">(' + items.length + ' hooks)</span></h2>';
+    html += '  <div class="hook-grid">';
+    for (var i = 0; i < items.length; i++) {
+      var h = items[i];
+      html += '    <div class="hook-card">';
+      html += '      <div class="hook-header">';
+      html += '        <span class="hook-name">' + h.name + '</span>';
+      html += '        <span class="hook-duration">' + h.duration + '</span>';
+      html += '      </div>';
+      html += '      <p class="hook-prompt">' + escHtml(h.seedance_prompt) + '</p>';
+      html += '      <div class="hook-why">';
+      html += '        <span class="hook-why-label">🎯 Why It Works</span>';
+      html += '        <span>' + escHtml(h.why_it_works) + '</span>';
+      html += '      </div>';
+      html += '    </div>';
+    }
+    html += '  </div>';
+    html += '</div>';
+  }
+  container.innerHTML = html;
+} else if (container) {
+  container.innerHTML = '<div class="cat-section" style="text-align:center;padding:80px 20px;color:var(--text-muted);"><p>Loading hooks data...</p></div>';
+}
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+window.toggleLang = function(){var p=window.location.pathname;window.location.href=p.startsWith('/en')?p.replace(/^\\/en(\\/|$)/,'/'):'/en'+(p==='/'?'/':p);};
+(function(){var b=document.getElementById('ljNavToggle'),m=document.getElementById('ljNavLinks');if(b&&m){b.addEventListener('click',function(){if(m.style.display==='flex'){m.style.display=''}else{m.style.display='flex';m.style.flexDirection='column';m.style.position='absolute';m.style.top='64px';m.style.left='0';m.style.right='0';m.style.background='rgba(10,22,40,0.98)';m.style.backdropFilter='blur(16px)';m.style.padding='12px 16px';m.style.borderBottom='1px solid rgba(255,255,255,0.08)';m.style.gap='4px'}})}})();
+window.copyWechatFloat = function(){var w='ljzdh888';if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(w).then(function(){showFloatToast('WeChat ljzdh888 copied');}).catch(function(){fallbackCopy(w);});}else{fallbackCopy(w);}};
+function fallbackCopy(t){var a=document.createElement('textarea');a.value=t;a.style.position='fixed';a.style.left='-9999px';document.body.appendChild(a);a.select();try{document.execCommand('copy');showFloatToast('WeChat '+t+' copied');}catch(e){showFloatToast('WeChat: '+t);}document.body.removeChild(a);}
+function showFloatToast(msg){var t=document.getElementById('lj-toast');if(!t){t=document.createElement('div');t.id='lj-toast';t.style.cssText='position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:rgba(0,87,184,0.92);color:#fff;padding:12px 24px;border-radius:8px;font-size:14px;z-index:9999;opacity:0;transition:all 0.35s ease;pointer-events:none;backdrop-filter:blur(12px);border:1px solid rgba(0,168,255,0.2);white-space:nowrap;';document.body.appendChild(t);}t.textContent=msg;t.style.opacity='1';clearTimeout(t._hide);t._hide=setTimeout(function(){t.style.opacity='0';},3000);}
+</script>
+</body>
+</html>

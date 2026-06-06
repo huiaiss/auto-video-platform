@@ -13,3 +13,17 @@
 
 /en/products/*.html
   Cache-Control: public, max-age=7200
+
+# Static assets: 24h cache
+/*.css
+  Cache-Control: public, max-age=86400
+/*.js
+  Cache-Control: public, max-age=86400
+/*.png
+  Cache-Control: public, max-age=86400
+/*.jpg
+  Cache-Control: public, max-age=86400
+/*.webp
+  Cache-Control: public, max-age=86400
+/*.svg
+  Cache-Control: public, max-age=86400

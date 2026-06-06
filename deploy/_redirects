@@ -5,6 +5,21 @@
 # Ensure trailing slash URLs work
 /products/  /products/index.html  200
 /en/products/  /en/products/index.html  200
+/cases/  /cases/index.html  200
+/en/cases/  /en/cases/index.html  200
+/about/  /about/index.html  200
+/en/about/  /en/about/index.html  200
+/contact/  /contact/index.html  200
+/en/contact/  /en/contact/index.html  200
+/service/  /service/index.html  200
+/en/service/  /en/service/index.html  200
+/videos/  /videos/index.html  200
+/en/videos/  /en/videos/index.html  200
+# Non-trailing-slash fallbacks
+/visual-hub  /visual-hub/index.html  200
+/en/visual-hub  /en/visual-hub/index.html  200
+/visual-hub/  /visual-hub/index.html  200
+/en/visual-hub/  /en/visual-hub/index.html  200
 
 # Root
 /  /index.html  200

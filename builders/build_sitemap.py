@@ -39,6 +39,9 @@ pages = [
     {"loc": "/en/contact/", "priority": "0.9", "changefreq": "monthly"},
     {"loc": "/en/about/", "priority": "0.6", "changefreq": "monthly"},
     {"loc": "/en/service/", "priority": "0.5", "changefreq": "monthly"},
+    # 视觉方案库
+    {"loc": "/visual-hub/", "priority": "0.6", "changefreq": "weekly"},
+    {"loc": "/en/visual-hub/", "priority": "0.6", "changefreq": "weekly"},
 ]
 
 # 扫描 landing 目录（中文产品页）
