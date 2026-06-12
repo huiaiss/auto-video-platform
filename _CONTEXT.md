@@ -1,39 +1,46 @@
-# Codex Context Checkpoint
-> Auto-saved: 2026-06-05 01:34
+# Auto Video Platform — 项目状态 v4
+> 2026-06-12 | 架构：Hermes → Claude | Codex 已裁撤
 
-## Current Pipeline State
-- Pipeline: **S1+S2+S3**
-- Script: 电机定子绕线内幕 (7 beats, content_share)
-- final.mp4: 5988KB
+## 团队架构 (v4)
+```
+老板(用户) = 终审
+  └── Hermes = 调度 + 审计（不执行）
+        └── Claude = 创意 + 执行（avp + cxp 全包）
+              Codex = 已裁撤
+```
+
+## 通信
+飞书 → feishu-bridge → task-board.json ← Hermes Loop(5min)
+Hermes → subprocess → Claude CLI
+
+## 模型路由
+- smart_proxy :15721 → DeepSeek
+- 豆包 doubao → vision 专用
+
+## 管线状态 (Stage 1-3 全 PASS)
+- Stage 1 粗剪 ✅ | Stage 2 脚本 ✅ | Stage 3 合成 ✅
+- final.mp4: output/stage3/final.mp4 (31.9MB)
+- completed.marker: VERIFIED
 
 ## Config
-- TTS voice: longxiaochun
-- Script mode: content (default) / add -m for marketing
+- TTS: 豆包语音合成2.0 (ArkTTS :8791, zh_male_1)
+- HDR: reinhard tonemap
+- Audio: loudnorm I=-16, xfade 0.3s, CRF 18
+- BGM: 188 首
 
-## Key Decisions
-- HDR->SDR: reinhard tonemap
-- BGM: mixkit_107.mp3 (227s)
-- TTS: Ark TTS via proxy :8791
-- Audio: loudnorm I=-16 after SFX mix
-- Script: content_share (default) / viral_short (-m)
-- Emotion audit: hook + trust|proof + action|save
-- xfade 0.3s, CRF 18, preset slow
+## 两个项目
+- avp: 竖屏 1080×1920 绕线机 → Claude
+- cxp: 横屏 1920×1080 工厂动画 → Claude（接管自 Codex，5 scene 已渲染待 concat）
 
-## Architecture
-- pipeline.py — main pipeline
-- go.py — one-click runner
-- config/tts_config.json — TTS providers
-- generators/ark_tts_proxy.py — TTS proxy :8791
-- generators/tts_providers.py — TTS dispatcher
-- auditors/audit_*.py — 3 audits
-- configs/brands/taizhou_longjiang.json — brand
+## 创意引擎
+- ~/.hermes/skills/avp/industrial-creative-engine/SKILL.md
+- 绕线机方向：铜线呼吸(第1) > 线圈禅意 > 精度可见
+- 待办：推铜线呼吸给 Claude → Seedance → 出片验证
 
-## Footage
-- D:/隆江视频素材/IMG_0346~0349.MP4 (4 files, HDR HLG)
-- Output: output/stage3/final.mp4
-
-## Session Rules
-1. Read _CONTEXT.md + shared-context.md at session start
-2. go.py = full pipeline; python pipeline.py [0-3] = single stage
-3. Audit must PASS before next stage
-4. Default mode = content_share (no marketing CTA)
+## 铁律
+1. 逆向思维 — 观众想看什么，不是工厂想展示什么
+2. 自审计 — 磁盘对账 + 内容审计，不 PASS 不往下走
+3. 创意在前 AI 在后 — 不是 AI 决定拍什么
+4. Hermes 不执行，只调度 + 审计
+5. 不做没派的话，先问再干
+6. 别碰 GitHub 写入

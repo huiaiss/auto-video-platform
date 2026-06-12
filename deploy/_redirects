@@ -1,3 +1,7 @@
+# 🔴 HTTP → HTTPS 强转（Cloudflare Pages）
+http://*longjiang-ai.com/* https://www.longjiang-ai.com/:splat 301!
+http://*www.longjiang-ai.com/* https://www.longjiang-ai.com/:splat 301!
+
 # Cloudflare Pages redirects
 # Language detection redirect (optional - handled by main site JS)
 # All routes work as-is with the file structure
@@ -20,6 +24,18 @@
 /en/visual-hub  /en/visual-hub/index.html  200
 /visual-hub/  /visual-hub/index.html  200
 /en/visual-hub/  /en/visual-hub/index.html  200
+
+# Blog & FAQ routes
+/blog/  /blog/index.html  200
+/en/blog/  /en/blog/index.html  200
+/faq/  /faq/index.html  200
+/en/faq/  /en/faq/index.html  200
+
+# /zh/ aliases (Chinese language alias) — 301 permanent redirect to root Chinese paths
+/zh/faq  /faq/  301
+/zh/faq/  /faq/  301
+/zh/blog  /blog/  301
+/zh/blog/  /blog/  301
 
 # Root
 /  /index.html  200
